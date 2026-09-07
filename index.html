@@ -3,742 +3,1395 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lumanoids – Transformando dados em decisão</title>
-<meta name="description" content="Dashboards inteligentes que transformam seus dados em decisões estratégicas. Clareza, organização e apoio à tomada de decisão para PMEs.">
-<meta name="keywords" content="dashboard, análise de dados, business intelligence, Power BI, decisão estratégica, PME">
+<title>Lumanoids – Dados, Automação e Inteligência para negócios</title>
+<meta name="description" content="Dashboards, análise de dados e automações para tornar sua empresa mais eficiente. Você foca no resultado, a Lumanoids cuida da solução.">
+<meta name="keywords" content="automação de processos, automação de relatórios, VBA, Python, Power BI, Power Query, Power Automate, dashboard, análise de dados, PME">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #0A0F2C;
-    --navy2: #0D1535;
-    --blue: #1B2EB0;
-    --cyan: #00C8E8;
-    --violet: #7B3FE4;
-    --pink: #C43BE8;
-    --white: #F0F4FF;
-    --gray: #8A9BC0;
-    --card: rgba(255,255,255,0.04);
-    --border: rgba(0,200,232,0.15);
-    --grad: linear-gradient(135deg, #1B2EB0, #7B3FE4, #C43BE8);
-    --green: #22c55e;
-    --yellow: #eab308;
-    --red: #ef4444;
-    --gold: #f59e0b;
+    --ink: #0C1526;
+    --ink-2: #16233D;
+    --ink-3: #1E2E4D;
+    --blue: #1D4ED8;
+    --blue-600: #2563EB;
+    --blue-400: #60A5FA;
+    --blue-50: #EFF4FF;
+    --blue-100: #DCE7FE;
+    --bg: #F6F8FC;
+    --white: #FFFFFF;
+    --line: #E3E8F1;
+    --line-2: #EEF2F8;
+    --text: #0F1B33;
+    --muted: #64748B;
+    --muted-2: #94A3B8;
+    --green: #16A34A;
+    --green-bg: #ECFDF3;
+    --amber: #D97706;
+    --red: #DC2626;
+    --sidebar-w: 234px;
+    --radius: 12px;
+    --shadow-sm: 0 1px 2px rgba(15,27,51,.05);
+    --shadow: 0 4px 16px rgba(15,27,51,.06);
+    --shadow-lg: 0 18px 48px rgba(15,27,51,.10);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Inter', sans-serif; background: var(--navy); color: var(--white); overflow-x: hidden; line-height: 1.6; }
-  body::before { content: ''; position: fixed; inset: 0; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; }
-  .blob { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
-  .blob1 { width: 500px; height: 500px; background: rgba(123,63,228,0.15); top: -100px; left: -150px; }
-  .blob2 { width: 400px; height: 400px; background: rgba(0,200,232,0.1); bottom: 20%; right: -100px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--white); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  img, svg { display: block; max-width: 100%; }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
 
-  /* NAV */
-  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 14px 5%; display: flex; align-items: center; justify-content: space-between; background: rgba(10,15,44,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); transition: all 0.3s; }
-  .nav-logo-wrap { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-  .nav-logo-img { height: 38px; width: auto; display: block; }
-  .nav-logo-text { font-weight: 800; font-size: 1.3rem; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .nav-links { display: flex; gap: 26px; list-style: none; }
-  .nav-links a { color: var(--gray); text-decoration: none; font-size: 0.86rem; font-weight: 500; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--white); }
-  .nav-cta { background: var(--grad); color: #fff; border: none; padding: 9px 18px; border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: opacity 0.2s, transform 0.2s; }
-  .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
-  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 200; }
-  .hamburger span { width: 24px; height: 2px; background: var(--white); border-radius: 2px; display: block; }
-  .mobile-menu { display: none; position: fixed; inset: 0; top: 62px; background: rgba(10,15,44,0.98); backdrop-filter: blur(20px); flex-direction: column; padding: 40px 5%; gap: 0; z-index: 99; overflow-y: auto; }
-  .mobile-menu.open { display: flex; }
-  .mobile-menu a { color: var(--white); text-decoration: none; font-size: 1.1rem; font-weight: 600; padding: 16px 0; border-bottom: 1px solid var(--border); }
-  .mobile-menu .m-cta { margin-top: 24px; border-bottom: none; }
+  /* ---------- SIDEBAR ---------- */
+  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--ink); color: #fff; display: flex; flex-direction: column; padding: 30px 18px 24px; z-index: 200; overflow-y: auto; }
+  .sb-brand { padding: 0 10px; }
+  .sb-logo { font-weight: 800; font-size: 1.5rem; letter-spacing: -.6px; color: #fff; text-decoration: none; display: block; }
+  .sb-tagline { font-size: .72rem; color: #7E8DA6; margin-top: 4px; letter-spacing: .01em; }
+  .sb-rule { height: 1px; background: rgba(255,255,255,.12); margin: 22px 10px 20px; }
+  .sb-nav { display: flex; flex-direction: column; gap: 2px; }
+  .sb-link { display: flex; align-items: center; gap: 13px; padding: 11px 12px; border-radius: 9px; text-decoration: none; color: #B4C0D4; font-size: .9rem; font-weight: 500; border-left: 3px solid transparent; transition: background .18s, color .18s; }
+  .sb-link svg { width: 18px; height: 18px; flex-shrink: 0; stroke-width: 1.8; }
+  .sb-link:hover { background: rgba(255,255,255,.06); color: #fff; }
+  .sb-link.active { background: rgba(37,99,235,.16); color: #fff; border-left-color: var(--blue-600); font-weight: 600; }
+  .sb-wpp { margin-top: 26px; display: flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid rgba(34,197,94,.45); color: #4ADE80; background: rgba(22,163,74,.10); border-radius: 10px; padding: 12px 14px; font-size: .85rem; font-weight: 600; text-decoration: none; transition: background .18s; }
+  .sb-wpp:hover { background: rgba(22,163,74,.2); color: #86EFAC; }
+  .sb-wpp svg { width: 17px; height: 17px; }
+  .sb-foot { margin-top: auto; padding: 22px 12px 0; border-top: 1px solid rgba(255,255,255,.1); }
+  .sb-foot .sb-quote { font-size: .78rem; color: #7E8DA6; line-height: 1.55; margin-bottom: 16px; }
+  .sb-foot p { font-size: .7rem; color: #5B6B85; line-height: 1.6; }
 
-  /* HERO */
-  #hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 5% 80px; position: relative; z-index: 1; text-align: center; }
-  .hero-inner { max-width: 820px; margin: 0 auto; }
-  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,200,232,0.1); border: 1px solid rgba(0,200,232,0.3); padding: 6px 16px; border-radius: 100px; font-size: 0.75rem; color: var(--cyan); margin-bottom: 28px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
-  .hero-badge span { width: 6px; height: 6px; background: var(--cyan); border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
-  h1 { font-weight: 900; font-size: clamp(2.1rem, 5.5vw, 3.8rem); line-height: 1.1; letter-spacing: -2px; margin-bottom: 22px; }
-  h1 .gradient { background: linear-gradient(90deg, var(--cyan) 0%, var(--violet) 50%, var(--pink) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .hero-sub { font-size: clamp(0.92rem, 2vw, 1.1rem); color: var(--gray); max-width: 540px; margin: 0 auto 40px; font-weight: 400; line-height: 1.8; }
-  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .btn-primary { background: var(--grad); color: #fff; border: none; padding: 13px 26px; border-radius: 10px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.92rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: transform .2s, box-shadow .2s; box-shadow: 0 0 28px rgba(123,63,228,0.4); }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(123,63,228,0.5); }
-  .btn-secondary { background: transparent; color: var(--white); border: 1px solid var(--border); padding: 13px 26px; border-radius: 10px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.92rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: border-color .2s, background .2s; }
-  .btn-secondary:hover { border-color: var(--cyan); background: rgba(0,200,232,0.06); }
-  .hero-stats { display: flex; gap: 36px; justify-content: center; flex-wrap: wrap; margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--border); }
-  .stat-num { font-weight: 900; font-size: 1.85rem; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .stat-label { font-size: 0.76rem; color: var(--gray); margin-top: 3px; font-weight: 500; }
+  /* mobile topbar */
+  .topbar { display: none; position: sticky; top: 0; z-index: 190; background: var(--ink); color: #fff; padding: 13px 18px; align-items: center; justify-content: space-between; }
+  .topbar .tb-logo { font-weight: 800; font-size: 1.15rem; letter-spacing: -.4px; text-decoration: none; color: #fff; }
+  .tb-actions { display: flex; align-items: center; gap: 10px; }
+  .tb-wpp { width: 36px; height: 36px; border-radius: 9px; background: rgba(22,163,74,.15); border: 1px solid rgba(34,197,94,.4); display: flex; align-items: center; justify-content: center; }
+  .tb-wpp svg { width: 17px; height: 17px; }
+  .hamburger { width: 38px; height: 36px; border-radius: 9px; border: 1px solid rgba(255,255,255,.18); background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
+  .hamburger span { width: 17px; height: 1.8px; background: #fff; border-radius: 2px; }
+  .sb-overlay { display: none; position: fixed; inset: 0; background: rgba(12,21,38,.55); z-index: 195; }
+  .sb-overlay.open { display: block; }
 
-  /* SECTIONS */
-  section { position: relative; z-index: 1; padding: 76px 5%; }
-  .section-label { font-size: 0.7rem; color: var(--cyan); letter-spacing: .15em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
-  .section-title { font-weight: 800; font-size: clamp(1.65rem, 3.5vw, 2.5rem); letter-spacing: -1px; line-height: 1.15; margin-bottom: 12px; }
-  .section-sub { color: var(--gray); font-size: 0.92rem; max-width: 520px; line-height: 1.8; }
-  .center { text-align: center; }
-  .center .section-sub { margin: 0 auto; }
-  .max-w { max-width: 1100px; margin: 0 auto; }
+  /* ---------- LAYOUT ---------- */
+  .main { margin-left: var(--sidebar-w); min-height: 100vh; background: var(--white); }
+  .wrap { padding: 0 clamp(24px, 4vw, 56px); }
+  .band { padding: clamp(56px, 6vw, 86px) 0; }
+  .band-bg { background: var(--bg); }
+  .eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .18em; color: var(--muted-2); text-transform: uppercase; margin-bottom: 12px; }
+  h2.title { font-size: clamp(1.7rem, 3.1vw, 2.35rem); font-weight: 800; letter-spacing: -1px; line-height: 1.15; color: var(--text); }
+  .lead { color: var(--muted); font-size: .96rem; line-height: 1.75; max-width: 620px; }
+  .sec-head { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(0, 1.15fr) auto; gap: 26px; align-items: end; margin-bottom: 34px; }
+  .sec-head .link-more { color: var(--blue); font-weight: 600; font-size: .88rem; text-decoration: none; border-bottom: 1px solid var(--blue-100); padding-bottom: 4px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .sec-head .link-more:hover { border-bottom-color: var(--blue); }
+  .sec-head-center { text-align: center; max-width: 640px; margin: 0 auto 38px; }
+  .sec-head-center .lead { margin: 0 auto; }
 
-  /* BENEFITS */
-  .benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap: 18px; margin-top: 44px; }
-  .benefit-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; transition: transform .2s; }
-  .benefit-card:hover { transform: translateY(-3px); }
-  .benefit-icon { width: 44px; height: 44px; border-radius: 11px; background: linear-gradient(135deg,rgba(123,63,228,.2),rgba(0,200,232,.1)); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: 14px; border: 1px solid rgba(123,63,228,.2); }
-  .benefit-card h3 { font-weight: 700; font-size: 0.96rem; margin-bottom: 6px; }
-  .benefit-card p { color: var(--gray); font-size: 0.83rem; line-height: 1.65; }
+  /* ---------- BUTTONS ---------- */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 24px; border-radius: 10px; font-family: inherit; font-size: .92rem; font-weight: 600; text-decoration: none; cursor: pointer; border: 1px solid transparent; transition: transform .15s, box-shadow .15s, background .15s, border-color .15s; white-space: nowrap; }
+  .btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .btn-blue { background: var(--blue); color: #fff; box-shadow: 0 6px 18px rgba(29,78,216,.22); }
+  .btn-blue:hover { background: var(--blue-600); transform: translateY(-1px); box-shadow: 0 10px 24px rgba(29,78,216,.28); }
+  .btn-wpp { background: #fff; color: var(--text); border-color: var(--line); box-shadow: var(--shadow-sm); }
+  .btn-wpp svg { color: var(--green); }
+  .btn-wpp:hover { border-color: #86EFAC; background: var(--green-bg); }
+  .btn-ghost { background: #fff; color: var(--text); border-color: var(--line); }
+  .btn-ghost:hover { border-color: var(--blue-400); color: var(--blue); }
+  .btn-sm { padding: 10px 18px; font-size: .85rem; }
+  .btn-block { width: 100%; }
 
-  /* PRICING */
-  #precos { background: var(--navy2); }
-  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px; margin-top: 44px; }
-  .price-card { background: var(--card); border-radius: 18px; padding: 30px 24px; border: 2px solid transparent; position: relative; overflow: hidden; transition: transform .3s, box-shadow .3s; display: flex; flex-direction: column; }
-  .price-card:hover { transform: translateY(-5px); }
-  .price-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
-  .price-card.green { border-color: rgba(34,197,94,.25); } .price-card.green::before { background: var(--green); }
-  .price-card.yellow { border-color: rgba(234,179,8,.25); } .price-card.yellow::before { background: var(--yellow); }
-  .price-card.red { border-color: rgba(239,68,68,.25); } .price-card.red::before { background: var(--red); }
-  .price-card.gold { border-color: rgba(245,158,11,.4); background: linear-gradient(135deg,rgba(245,158,11,.06),rgba(123,63,228,.04)); box-shadow: 0 0 40px rgba(245,158,11,.1); }
-  .price-card.gold::before { background: linear-gradient(90deg,var(--gold),#fbbf24); }
-  .price-badge { display: inline-block; font-size: 0.67rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 11px; border-radius: 100px; margin-bottom: 16px; width: fit-content; }
-  .badge-green { background: rgba(34,197,94,.15); color: var(--green); }
-  .badge-yellow { background: rgba(234,179,8,.15); color: var(--yellow); }
-  .badge-red { background: rgba(239,68,68,.15); color: var(--red); }
-  .badge-gold { background: rgba(245,158,11,.2); color: var(--gold); }
-  .price-card h3 { font-weight: 800; font-size: 1.15rem; margin-bottom: 4px; }
-  .price-amount { margin: 18px 0; }
-  .price-from { font-size: 0.72rem; color: var(--gray); font-weight: 500; }
-  .price-value { font-size: 2.3rem; font-weight: 900; letter-spacing: -2px; }
-  .price-value span { font-size: 1rem; font-weight: 700; vertical-align: super; margin-right: 1px; }
-  .price-period { font-size: 0.76rem; color: var(--gray); margin-top: 3px; }
-  .manutencao-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 700; padding: 4px 11px; border-radius: 7px; margin-bottom: 14px; }
-  .tag-included { background: rgba(34,197,94,.1); color: var(--green); }
-  .tag-none { background: rgba(138,155,192,.1); color: var(--gray); }
-  .price-features { list-style: none; margin: 16px 0; flex: 1; }
-  .price-features li { font-size: 0.83rem; padding: 6px 0; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid rgba(255,255,255,.04); }
-  .price-features li:last-child { border-bottom: none; }
-  .price-features li::before { content: '✓'; font-weight: 700; flex-shrink: 0; font-size: 0.78rem; }
-  .price-card.green .price-features li::before { color: var(--green); }
-  .price-card.yellow .price-features li::before { color: var(--yellow); }
-  .price-card.red .price-features li::before { color: var(--red); }
-  .price-card.gold .price-features li::before { color: var(--gold); }
-  .price-disclaimer { margin-top: 28px; padding: 18px 22px; background: rgba(0,200,232,.05); border: 1px solid rgba(0,200,232,.15); border-radius: 12px; text-align: center; }
-  .price-disclaimer p { color: var(--gray); font-size: 0.82rem; line-height: 1.7; }
-  .price-disclaimer strong { color: var(--white); }
+  /* ---------- HERO ---------- */
+  .hero { display: grid; grid-template-columns: 1fr 1.12fr; min-height: 520px; }
+  .hero-left { padding: clamp(40px, 5vw, 66px) clamp(24px, 4vw, 56px) clamp(40px, 5vw, 60px); display: flex; flex-direction: column; justify-content: center; }
+  .hero h1 { font-size: clamp(2.1rem, 3.9vw, 3.4rem); font-weight: 800; letter-spacing: -1.8px; line-height: 1.08; margin-bottom: 20px; }
+  .hero h1 .blue { color: var(--blue); display: block; }
+  .hero p.sub { color: var(--muted); font-size: 1rem; line-height: 1.75; max-width: 460px; margin-bottom: 30px; }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-feats { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 34px; }
+  .hero-feat { display: flex; align-items: center; gap: 10px; font-size: .86rem; font-weight: 500; color: var(--text); }
+  .hero-feat svg { width: 19px; height: 19px; color: var(--blue); stroke-width: 1.7; }
+  .hero-right { position: relative; background: linear-gradient(150deg, #EAF0FA 0%, #DCE6F6 45%, #C9D8EF 100%); display: flex; align-items: center; justify-content: center; padding: 40px 34px; overflow: hidden; }
+  .hero-right::before { content: ''; position: absolute; width: 420px; height: 420px; border-radius: 50%; background: rgba(255,255,255,.5); filter: blur(60px); top: -120px; right: -80px; }
+  .hero-note { position: absolute; top: 30px; right: 34px; text-align: right; font-size: .66rem; font-weight: 700; letter-spacing: .16em; color: #7286A6; line-height: 1.9; text-transform: uppercase; z-index: 3; }
+  .hero-note .nl { display: block; width: 26px; height: 1px; background: #9CAFC9; margin-left: auto; margin-bottom: 9px; }
 
-  /* HOW */
-  #como-funciona { background: var(--navy2); }
-  .steps { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 0; margin-top: 44px; position: relative; }
-  .steps::before { content: ''; position: absolute; top: 30px; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg,transparent,var(--border),var(--border),transparent); }
-  .step { text-align: center; padding: 0 14px; }
-  .step-num { width: 58px; height: 58px; border-radius: 50%; background: var(--grad); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; margin: 0 auto 16px; position: relative; z-index: 1; box-shadow: 0 0 20px rgba(123,63,228,.4); }
-  .step h3 { font-weight: 700; font-size: 0.92rem; margin-bottom: 6px; }
-  .step p { color: var(--gray); font-size: 0.82rem; line-height: 1.65; }
+  /* monitor mockup */
+  .monitor { position: relative; z-index: 2; width: 100%; max-width: 620px; background: #0E1930; border-radius: 12px; padding: 9px; box-shadow: var(--shadow-lg), 0 0 0 1px rgba(12,21,38,.1); }
+  .monitor-screen { background: #101E38; border-radius: 7px; overflow: hidden; display: grid; grid-template-columns: 34px 1fr; }
+  .mon-rail { background: #0C1729; padding: 12px 0; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .mon-rail i { width: 15px; height: 15px; border-radius: 4px; background: rgba(148,180,233,.22); display: block; }
+  .mon-rail i:first-child { background: var(--blue-600); }
+  .mon-body { padding: 12px 13px 14px; }
+  .mon-h { font-size: .7rem; font-weight: 700; color: #E7EEFA; margin-bottom: 10px; }
+  .mon-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; margin-bottom: 9px; }
+  .mon-kpi { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); border-radius: 6px; padding: 8px 8px; }
+  .mon-kpi .k { font-size: .52rem; color: #93A6C4; margin-bottom: 3px; line-height: 1.3; }
+  .mon-kpi .v { font-size: .82rem; font-weight: 800; color: #fff; letter-spacing: -.3px; }
+  .mon-kpi .d { font-size: .5rem; color: #4ADE80; margin-top: 2px; }
+  .mon-row { display: grid; gap: 7px; margin-bottom: 7px; }
+  .mon-row.r2 { grid-template-columns: 1.6fr 1fr; }
+  .mon-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.07); border-radius: 6px; padding: 9px 10px; }
+  .mon-card .ct { font-size: .55rem; color: #B7C6DE; font-weight: 600; margin-bottom: 7px; display: flex; justify-content: space-between; align-items: center; }
+  .mon-legend { display: flex; gap: 7px; font-size: .46rem; color: #8FA2C0; }
+  .mon-legend span { display: inline-flex; align-items: center; gap: 3px; }
+  .mon-legend i { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+  .mon-axis { display: flex; justify-content: space-between; font-size: .44rem; color: #7386A5; margin-top: 4px; }
+  .mon-bars { display: flex; align-items: flex-end; gap: 8px; height: 46px; padding: 0 4px; }
+  .mon-bars .b { flex: 1; background: var(--blue-600); border-radius: 2px 2px 0 0; }
+  .mon-hbars { display: flex; flex-direction: column; gap: 6px; }
+  .mon-hbar { display: flex; align-items: center; gap: 6px; font-size: .48rem; color: #93A6C4; }
+  .mon-hbar .lb { width: 42px; flex-shrink: 0; }
+  .mon-hbar .tr { flex: 1; height: 5px; background: rgba(255,255,255,.08); border-radius: 3px; overflow: hidden; }
+  .mon-hbar .fl { height: 100%; background: var(--blue-400); border-radius: 3px; }
+  .mon-donut { display: flex; align-items: center; gap: 10px; }
+  .mon-donut-legend { display: flex; flex-direction: column; gap: 4px; font-size: .47rem; color: #93A6C4; }
+  .mon-donut-legend span { display: flex; align-items: center; gap: 5px; }
+  .mon-donut-legend i { width: 5px; height: 5px; border-radius: 50%; }
 
-  /* PORTFOLIO */
-  #portfolio { background: var(--navy); }
-  .portfolio-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 28px 0 20px; }
-  .tab-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--gray); font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all .2s; }
-  .tab-btn.active, .tab-btn:hover { background: rgba(123,63,228,.15); border-color: var(--violet); color: var(--white); }
-  .dashboard-display { border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
-  .dash-wrap { background: #0e1535; padding: 0; min-height: 380px; }
-  .dash-inner { padding: 18px; font-family: 'Inter', sans-serif; }
-  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-  .dash-title { font-size: 0.86rem; font-weight: 700; color: var(--white); }
-  .dash-date { font-size: 0.68rem; color: var(--gray); background: rgba(255,255,255,.05); padding: 3px 9px; border-radius: 5px; }
-  .kpi-row { display: grid; gap: 10px; margin-bottom: 14px; }
-  .kpi-row-4 { grid-template-columns: repeat(4,1fr); }
-  .kpi-card { background: rgba(255,255,255,.05); border-radius: 9px; padding: 12px; border: 1px solid rgba(255,255,255,.06); }
-  .kpi-label { font-size: 0.65rem; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
-  .kpi-value { font-size: 1.25rem; font-weight: 800; }
-  .kpi-change { font-size: 0.66rem; margin-top: 3px; }
-  .up { color: #22c55e; } .down { color: #ef4444; }
-  .chart-row { display: grid; gap: 10px; }
-  .chart-2 { grid-template-columns: 2fr 1fr; }
-  .chart-eq { grid-template-columns: 1fr 1fr; }
-  .chart-box { background: rgba(255,255,255,.04); border-radius: 9px; padding: 12px; border: 1px solid rgba(255,255,255,.06); }
-  .chart-box-title { font-size: 0.68rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
-  .bar-chart { display: flex; align-items: flex-end; gap: 5px; height: 85px; }
-  .bar { flex: 1; border-radius: 3px 3px 0 0; min-width: 10px; }
-  .donut-wrap { display: flex; align-items: center; gap: 12px; }
-  .donut-legend { display: flex; flex-direction: column; gap: 5px; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.67rem; color: var(--gray); }
-  .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .hbar-list { display: flex; flex-direction: column; gap: 7px; }
-  .hbar-item { display: flex; align-items: center; gap: 7px; font-size: 0.7rem; }
-  .hbar-label { width: 66px; color: var(--gray); flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .hbar-track { flex: 1; height: 7px; background: rgba(255,255,255,.05); border-radius: 4px; overflow: hidden; }
-  .hbar-fill { height: 100%; border-radius: 4px; }
-  .hbar-val { width: 38px; text-align: right; font-weight: 600; font-size: 0.68rem; }
-  .mini-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
-  .mini-table th { color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 3px 7px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.06); }
-  .mini-table td { padding: 5px 7px; border-bottom: 1px solid rgba(255,255,255,.04); color: var(--white); }
-  .mini-table tr:last-child td { border-bottom: none; }
-  .badge-sm { padding: 2px 7px; border-radius: 4px; font-size: 0.62rem; font-weight: 600; }
+  /* ---------- SERVICE CARDS ---------- */
+  .cards-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .cards-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; gap: 14px; align-items: flex-start; transition: border-color .18s, box-shadow .18s, transform .18s; }
+  .card:hover { border-color: var(--blue-400); box-shadow: var(--shadow); transform: translateY(-2px); }
+  .card-ico { width: 42px; height: 42px; border-radius: 9px; background: var(--blue-50); color: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .card-ico svg { width: 21px; height: 21px; stroke-width: 1.7; }
+  .card h3 { font-size: .93rem; font-weight: 700; margin-bottom: 5px; line-height: 1.35; }
+  .card p { font-size: .83rem; color: var(--muted); line-height: 1.6; }
+  .card-block { display: block; }
+  .card-block .card-ico { margin-bottom: 14px; }
 
-  /* SOBRE */
-  #sobre { background: var(--navy2); }
-  .sobre-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; max-width: 1100px; margin: 0 auto; }
-  .sobre-box { background: linear-gradient(135deg,rgba(123,63,228,.12),rgba(0,200,232,.06)); border: 1px solid rgba(123,63,228,.3); border-radius: 20px; padding: 36px; text-align: center; }
-  .sobre-logo-text { font-weight: 900; font-size: 2rem; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
-  .sobre-tagline { color: var(--cyan); font-size: 0.85rem; font-weight: 500; }
-  .sobre-text p { color: var(--gray); margin-bottom: 13px; font-size: 0.9rem; line-height: 1.82; }
-  .sobre-text strong { color: var(--white); }
+  /* ---------- CTA BAND ---------- */
+  .cta-strip { background: var(--blue-50); border: 1px solid var(--blue-100); border-radius: 14px; padding: 26px 30px; display: grid; grid-template-columns: auto 1fr auto auto; gap: 22px; align-items: center; }
+  .cta-strip .cs-ico { width: 46px; height: 46px; border-radius: 10px; background: #fff; color: var(--blue); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); }
+  .cta-strip h3 { font-size: 1.06rem; font-weight: 700; margin-bottom: 4px; }
+  .cta-strip p { font-size: .87rem; color: var(--muted); }
+  .cta-strip .cs-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta-strip .cs-note { border-left: 1px solid var(--blue-100); padding-left: 22px; font-size: .8rem; color: var(--muted); line-height: 1.6; }
 
-  /* FORMULÁRIO */
-  #orcamento { background: var(--navy); }
-  .form-steps-guide { background: rgba(0,200,232,.05); border: 1px solid rgba(0,200,232,.2); border-radius: 14px; padding: 22px 26px; margin: 36px auto 0; max-width: 720px; }
-  .form-steps-guide h4 { font-size: 0.82rem; font-weight: 700; color: var(--cyan); margin-bottom: 13px; letter-spacing: .05em; text-transform: uppercase; }
-  .guide-steps { display: flex; flex-direction: column; gap: 10px; }
-  .guide-step { display: flex; align-items: flex-start; gap: 11px; font-size: 0.82rem; color: var(--gray); }
-  .guide-step-num { width: 21px; height: 21px; border-radius: 50%; background: var(--grad); display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 800; flex-shrink: 0; color: #fff; }
-  .form-wrapper { max-width: 720px; margin: 20px auto 0; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-group.full { grid-column: 1/-1; }
-  .form-group label { font-size: 0.78rem; color: var(--gray); font-weight: 600; }
-  .form-group input, .form-group select, .form-group textarea { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--white); padding: 10px 13px; border-radius: 9px; font-family: 'Inter', sans-serif; font-size: 0.86rem; transition: border-color .2s, background .2s; outline: none; width: 100%; }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--violet); background: rgba(123,63,228,.06); }
-  .form-group select option { background: var(--navy2); }
-  .form-group textarea { resize: vertical; min-height: 88px; }
-  .form-submit { margin-top: 20px; width: 100%; }
-  .fs-success-box { display: none; text-align: center; padding: 24px 0; }
+  /* ---------- ANTES x DEPOIS ---------- */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .comp-col { border-radius: 14px; padding: 26px 24px; border: 1px solid var(--line); background: #fff; }
+  .comp-col.before { background: #FFF8F7; border-color: #FADCD6; }
+  .comp-col.after { background: var(--green-bg); border-color: #C3EBD3; }
+  .comp-head { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .comp-col.before .comp-head { color: #B4423A; }
+  .comp-col.after .comp-head { color: #14804A; }
+  .comp-head svg { width: 19px; height: 19px; }
+  .comp-desc { font-size: .84rem; color: var(--muted); margin-bottom: 18px; }
+  .comp-steps { display: flex; flex-direction: column; gap: 8px; }
+  .comp-step { display: flex; align-items: center; gap: 11px; background: #fff; border: 1px solid var(--line-2); border-radius: 9px; padding: 11px 14px; font-size: .86rem; font-weight: 500; }
+  .comp-step .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .comp-loop { margin-top: 12px; font-size: .82rem; font-weight: 600; }
+  .comp-col.before .comp-loop { color: #B4423A; }
+  .comp-col.after .comp-loop { color: #14804A; }
+  .comp-foot { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(15,27,51,.08); font-size: .83rem; color: var(--muted); }
+  .comp-foot strong { color: var(--text); }
 
-  /* CONTATO */
-  #contato { background: var(--navy2); }
-  .contato-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 16px; margin-top: 44px; }
-  .contato-card { background: var(--card); border: 1px solid var(--border); border-radius: 13px; padding: 24px; text-align: center; text-decoration: none; color: var(--white); transition: border-color .2s, transform .2s; }
-  .contato-card:hover { border-color: var(--cyan); transform: translateY(-3px); }
-  .contato-icon { font-size: 1.7rem; margin-bottom: 10px; }
-  .contato-card h3 { font-weight: 700; font-size: 0.92rem; margin-bottom: 5px; }
-  .contato-card p { color: var(--gray); font-size: 0.8rem; line-height: 1.6; }
+  /* ---------- CATÁLOGO ---------- */
+  .cat-group { margin-bottom: 44px; }
+  .cat-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .cat-head .ci { width: 40px; height: 40px; border-radius: 10px; background: var(--blue-50); color: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cat-head .ci svg { width: 20px; height: 20px; stroke-width: 1.7; }
+  .cat-head h3 { font-size: 1.15rem; font-weight: 700; }
+  .cat-sub { font-size: .87rem; color: var(--muted); margin-bottom: 18px; padding-left: 52px; }
+  .cat-cta { margin-top: 18px; }
+  .big-card { background: linear-gradient(135deg, #F3F7FF, #FFFFFF); border: 1px solid var(--blue-100); border-radius: 16px; padding: 40px 34px; text-align: center; }
+  .big-card h3 { font-size: clamp(1.3rem, 2.6vw, 1.7rem); font-weight: 800; letter-spacing: -.6px; margin-bottom: 10px; }
+  .big-card p { color: var(--muted); font-size: .93rem; line-height: 1.75; max-width: 620px; margin: 0 auto 18px; }
+  .quote-box { max-width: 620px; margin: 0 auto 22px; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 0 10px 10px 0; padding: 15px 20px; text-align: left; font-size: .89rem; color: var(--text); font-style: italic; line-height: 1.7; }
+  .tech { text-align: center; margin-top: 44px; }
+  .tech h4 { font-size: .84rem; color: var(--muted); font-weight: 600; margin-bottom: 16px; }
+  .tech-items { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .tech-item { font-size: .82rem; font-weight: 600; color: var(--text); border: 1px solid var(--line); background: #fff; border-radius: 100px; padding: 8px 18px; }
 
-  /* CTA */
-  #cta-final { background: linear-gradient(135deg,rgba(27,46,176,.3),rgba(123,63,228,.2)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 76px 5%; text-align: center; }
-  #cta-final h2 { font-weight: 900; font-size: clamp(1.65rem,4vw,2.5rem); letter-spacing: -1px; margin-bottom: 12px; }
-  #cta-final p { color: var(--gray); font-size: 0.92rem; margin-bottom: 28px; }
+  /* ---------- PLANOS ---------- */
+  .tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
+  .tab { padding: 10px 20px; border-radius: 9px; border: 1px solid var(--line); background: #fff; color: var(--muted); font-family: inherit; font-size: .86rem; font-weight: 600; cursor: pointer; transition: all .18s; }
+  .tab.active, .tab:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .tab-note { text-align: center; color: var(--muted); font-size: .86rem; max-width: 640px; margin: 16px auto 26px; line-height: 1.7; }
+  .plans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .plans.p3 { grid-template-columns: repeat(3, 1fr); }
+  .plan { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 26px 22px; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: box-shadow .2s, transform .2s, border-color .2s; }
+  .plan:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+  .plan::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--line); }
+  .plan.a::before { background: #94A3B8; } .plan.b::before { background: var(--blue-400); }
+  .plan.c::before { background: var(--blue); } .plan.d::before { background: linear-gradient(90deg, #D97706, #F59E0B); }
+  .plan.d { border-color: #FCD9A6; background: linear-gradient(180deg, #FFFCF6, #fff); }
+  .plan-badge { font-size: .69rem; font-weight: 700; letter-spacing: .04em; padding: 4px 11px; border-radius: 100px; width: fit-content; margin-bottom: 14px; background: var(--blue-50); color: var(--blue); }
+  .plan.d .plan-badge { background: #FEF3E2; color: var(--amber); }
+  .plan h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: 4px; }
+  .plan .pdesc { font-size: .82rem; color: var(--muted); line-height: 1.55; }
+  .plan .amount { margin: 18px 0 14px; }
+  .plan .from { font-size: .74rem; color: var(--muted-2); font-weight: 500; }
+  .plan .value { font-size: 2.1rem; font-weight: 800; letter-spacing: -1.5px; color: var(--text); }
+  .plan .value span { font-size: .95rem; font-weight: 700; vertical-align: super; }
+  .plan .value.sob { font-size: 1.35rem; letter-spacing: -.5px; }
+  .plan .per { font-size: .77rem; color: var(--muted); }
+  .tag { display: inline-flex; align-items: center; gap: 5px; font-size: .73rem; font-weight: 600; padding: 4px 10px; border-radius: 7px; margin-bottom: 14px; width: fit-content; }
+  .tag.yes { background: var(--green-bg); color: var(--green); }
+  .tag.no { background: #F1F5F9; color: var(--muted); }
+  .plan ul { list-style: none; margin: 0 0 20px; flex: 1; }
+  .plan li { font-size: .84rem; padding: 7px 0; display: flex; gap: 9px; align-items: flex-start; border-bottom: 1px solid var(--line-2); color: #33415C; }
+  .plan li:last-child { border-bottom: none; }
+  .plan li::before { content: '✓'; color: var(--blue); font-weight: 700; font-size: .8rem; flex-shrink: 0; margin-top: 1px; }
+  .plan.d li::before { color: var(--amber); }
+  .disclaimer { margin-top: 26px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px 24px; text-align: center; font-size: .84rem; color: var(--muted); line-height: 1.7; }
+  .disclaimer strong { color: var(--text); }
 
-  /* FOOTER */
-  footer { padding: 32px 5%; text-align: center; border-top: 1px solid var(--border); position: relative; z-index: 1; }
-  .footer-logo { font-weight: 900; font-size: 1.15rem; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
-  .footer-links { display: flex; gap: 18px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
-  .footer-links a { color: var(--gray); text-decoration: none; font-size: 0.8rem; transition: color .2s; }
-  .footer-links a:hover { color: var(--white); }
-  footer p { color: var(--gray); font-size: 0.76rem; }
+  /* ---------- PROCESSO ---------- */
+  .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .step { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 22px 18px; }
+  .step .n { width: 34px; height: 34px; border-radius: 9px; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .82rem; margin-bottom: 14px; }
+  .step h3 { font-size: .92rem; font-weight: 700; margin-bottom: 6px; }
+  .step p { font-size: .82rem; color: var(--muted); line-height: 1.6; }
 
-  /* WPP FLOAT */
-  .wpp-float { position: fixed; bottom: 24px; right: 24px; z-index: 999; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37,211,102,.5); text-decoration: none; transition: transform .2s, box-shadow .2s; }
-  .wpp-float:hover { transform: scale(1.1); box-shadow: 0 8px 28px rgba(37,211,102,.6); }
-  .wpp-float svg { width: 27px; height: 27px; }
-  .wpp-pulse { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: rgba(37,211,102,.3); animation: wppP 2s infinite; }
-  @keyframes wppP { 0%,100%{transform:scale(1);opacity:.7}70%{transform:scale(1.4);opacity:0} }
+  /* ---------- PORTFÓLIO ---------- */
+  .pf-cat { font-size: .74rem; font-weight: 700; letter-spacing: .1em; color: var(--muted-2); text-transform: uppercase; margin: 22px 0 10px; }
+  .pf-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pf-tab { padding: 9px 16px; border-radius: 8px; border: 1px solid var(--line); background: #fff; color: var(--muted); font-family: inherit; font-size: .83rem; font-weight: 600; cursor: pointer; transition: all .18s; }
+  .pf-tab.active, .pf-tab:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .pf-view { margin-top: 22px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: var(--shadow-sm); }
+  .pf-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .pf-head h3 { font-size: .98rem; font-weight: 700; }
+  .pf-head .pill { font-size: .72rem; color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 100px; padding: 4px 12px; }
+  .kpis { display: grid; gap: 12px; margin-bottom: 14px; }
+  .kpis.k4 { grid-template-columns: repeat(4,1fr); }
+  .kpis.k3 { grid-template-columns: repeat(3,1fr); }
+  .kpi { background: var(--bg); border: 1px solid var(--line-2); border-radius: 10px; padding: 14px; }
+  .kpi .lbl { font-size: .72rem; color: var(--muted); margin-bottom: 5px; }
+  .kpi .val { font-size: 1.3rem; font-weight: 800; letter-spacing: -.6px; }
+  .kpi .chg { font-size: .72rem; margin-top: 3px; color: var(--green); }
+  .kpi .chg.dn { color: var(--red); }
+  .charts { display: grid; gap: 12px; }
+  .charts.c2 { grid-template-columns: 1.6fr 1fr; }
+  .charts.ceq { grid-template-columns: 1fr 1fr; }
+  .cbox { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .cbox-t { font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: 12px; }
+  .barchart { display: flex; align-items: flex-end; gap: 6px; height: 96px; }
+  .barchart .b { flex: 1; border-radius: 3px 3px 0 0; min-width: 8px; }
+  .chart-legend { display: flex; gap: 16px; margin-top: 10px; font-size: .74rem; color: var(--muted); }
+  .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .chart-legend i { width: 9px; height: 9px; border-radius: 2px; }
+  .donut-row { display: flex; align-items: center; gap: 16px; }
+  .donut-leg { display: flex; flex-direction: column; gap: 7px; font-size: .77rem; color: var(--muted); }
+  .donut-leg span { display: flex; align-items: center; gap: 7px; }
+  .donut-leg i { width: 8px; height: 8px; border-radius: 50%; }
+  .hbars { display: flex; flex-direction: column; gap: 10px; }
+  .hbar { display: flex; align-items: center; gap: 10px; font-size: .78rem; }
+  .hbar .lb { width: 78px; color: var(--muted); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hbar .tr { flex: 1; height: 8px; background: var(--line-2); border-radius: 5px; overflow: hidden; }
+  .hbar .fl { height: 100%; border-radius: 5px; background: var(--blue); }
+  .hbar .vl { width: 46px; text-align: right; font-weight: 600; font-size: .78rem; }
+  table.mini { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  table.mini th { text-align: left; color: var(--muted); font-weight: 600; font-size: .74rem; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  table.mini td { padding: 8px; border-bottom: 1px solid var(--line-2); }
+  table.mini tr:last-child td { border-bottom: none; }
+  .chip { font-size: .7rem; font-weight: 600; padding: 3px 9px; border-radius: 100px; }
+  .chip.ok { background: var(--green-bg); color: var(--green); }
+  .chip.wait { background: #FEF3E2; color: var(--amber); }
+  .chip.info { background: var(--blue-50); color: var(--blue); }
+  .chip.bad { background: #FEF0F0; color: var(--red); }
+  .pipe { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; }
+  .pipe .node { flex: 1; min-width: 118px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px 12px; text-align: center; }
+  .pipe .node .ni { width: 32px; height: 32px; margin: 0 auto 8px; border-radius: 8px; background: #fff; border: 1px solid var(--line); color: var(--blue); display: flex; align-items: center; justify-content: center; }
+  .pipe .node .ni svg { width: 16px; height: 16px; stroke-width: 1.8; }
+  .pipe .node .nt { font-size: .8rem; font-weight: 700; }
+  .pipe .node .ns { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+  .pipe .arw { display: flex; align-items: center; color: var(--blue-400); font-weight: 700; }
+  .logs { display: flex; flex-direction: column; gap: 8px; }
+  .log { display: flex; align-items: center; gap: 10px; font-size: .82rem; color: #33415C; background: var(--bg); border: 1px solid var(--line-2); border-radius: 9px; padding: 10px 13px; }
+  .log .ok { width: 18px; height: 18px; border-radius: 50%; background: var(--green-bg); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: .68rem; font-weight: 800; flex-shrink: 0; }
+  .log .tm { margin-left: auto; font-size: .74rem; color: var(--muted-2); flex-shrink: 0; }
 
-  /* MODAIS */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 500; backdrop-filter: blur(6px); overflow-y: auto; padding: 40px 20px; align-items: flex-start; justify-content: center; }
-  .modal-overlay.open { display: flex; }
-  .modal-box { background: var(--navy2); border: 1px solid var(--border); border-radius: 20px; padding: 34px; max-width: 580px; width: 100%; position: relative; }
-  .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--gray); font-size: 1.3rem; cursor: pointer; }
-  .modal-box h2 { font-weight: 800; margin-bottom: 16px; }
-  .modal-box h3 { font-size: 0.88rem; margin: 16px 0 6px; color: var(--cyan); font-weight: 700; }
-  .modal-box p { color: var(--gray); font-size: 0.83rem; margin-bottom: 7px; line-height: 1.75; }
+  /* ---------- SOBRE ---------- */
+  .about { display: grid; grid-template-columns: .85fr 1.15fr; gap: 46px; align-items: center; }
+  .about-box { background: var(--ink); color: #fff; border-radius: 16px; padding: 38px 32px; }
+  .about-box .ab-logo { font-size: 1.7rem; font-weight: 800; letter-spacing: -.8px; margin-bottom: 6px; }
+  .about-box .ab-tag { color: var(--blue-400); font-size: .86rem; font-weight: 500; }
+  .about-box .ab-quote { margin-top: 26px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.14); font-size: .88rem; color: #B4C0D4; line-height: 1.75; font-style: italic; }
+  .about-text p { color: var(--muted); font-size: .95rem; line-height: 1.8; margin-bottom: 14px; }
+  .about-text strong { color: var(--text); font-weight: 600; }
 
-  /* REVEAL */
-  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .6s ease, transform .6s ease; }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
+  /* ---------- SOLICITAÇÕES ---------- */
+  .ways { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 780px; margin: 0 auto 18px; }
+  .way { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+  .way.wpp { border-color: #C3EBD3; background: var(--green-bg); }
+  .way h4 { font-size: .96rem; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 9px; }
+  .way h4 svg { width: 18px; height: 18px; color: var(--blue); }
+  .way.wpp h4 svg { color: var(--green); }
+  .way p { font-size: .85rem; color: var(--muted); line-height: 1.65; margin-bottom: 16px; }
+  .guide { max-width: 780px; margin: 0 auto; background: var(--blue-50); border: 1px solid var(--blue-100); border-radius: 12px; padding: 22px 26px; }
+  .guide h4 { font-size: .87rem; font-weight: 700; color: var(--blue); margin-bottom: 14px; }
+  .guide .g { display: flex; align-items: flex-start; gap: 12px; font-size: .85rem; color: #33415C; margin-bottom: 10px; line-height: 1.6; }
+  .guide .g:last-child { margin-bottom: 0; }
+  .guide .gn { width: 21px; height: 21px; border-radius: 50%; background: var(--blue); color: #fff; font-size: .68rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .form-card { max-width: 780px; margin: 18px auto 0; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 34px; box-shadow: var(--shadow); }
+  .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .fg { display: flex; flex-direction: column; gap: 6px; }
+  .fg.full { grid-column: 1 / -1; }
+  .fg label { font-size: .82rem; font-weight: 600; color: #33415C; }
+  .fg input, .fg select, .fg textarea { background: #fff; border: 1px solid var(--line); color: var(--text); padding: 11px 14px; border-radius: 9px; font-family: inherit; font-size: .89rem; outline: none; width: 100%; transition: border-color .18s, box-shadow .18s; }
+  .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+  .fg input::placeholder, .fg textarea::placeholder { color: var(--muted-2); }
+  .fg textarea { resize: vertical; min-height: 96px; }
+  .fhint { font-size: .77rem; color: var(--muted-2); }
+  .fsubmit { margin-top: 22px; }
+  .success { display: none; text-align: center; padding: 26px 0; }
+  .success .si { width: 52px; height: 52px; border-radius: 50%; background: var(--green-bg); color: var(--green); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .success h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 7px; }
+  .success p { color: var(--muted); font-size: .9rem; margin-bottom: 20px; }
 
-  /* RESPONSIVE */
-  @media(max-width:900px) {
-    .sobre-inner { grid-template-columns: 1fr; gap: 28px; }
-    .steps { gap: 26px; } .steps::before { display: none; }
+  /* ---------- CONTATO / FOOTER ---------- */
+  .contacts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .contact { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; text-align: center; text-decoration: none; color: var(--text); transition: border-color .18s, transform .18s, box-shadow .18s; }
+  .contact:hover { border-color: var(--blue-400); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .contact .ci { width: 44px; height: 44px; border-radius: 10px; background: var(--blue-50); color: var(--blue); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .contact h3 { font-size: .93rem; font-weight: 700; margin-bottom: 5px; }
+  .contact p { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+  .final-cta { background: var(--ink); color: #fff; border-radius: 16px; padding: 48px 40px; text-align: center; }
+  .final-cta h2 { font-size: clamp(1.5rem, 2.8vw, 2.1rem); font-weight: 800; letter-spacing: -1px; line-height: 1.2; margin-bottom: 12px; }
+  .final-cta h2 .b { color: var(--blue-400); }
+  .final-cta p { color: #A8B6CC; font-size: .93rem; margin-bottom: 26px; }
+  .final-cta .fbtns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .main-foot { border-top: 1px solid var(--line); padding: 26px clamp(24px, 4vw, 56px); display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .main-foot .fl { display: flex; gap: 20px; flex-wrap: wrap; }
+  .main-foot a { color: var(--muted); font-size: .83rem; text-decoration: none; }
+  .main-foot a:hover { color: var(--blue); }
+  .main-foot p { font-size: .8rem; color: var(--muted-2); }
+
+  /* ---------- WPP FLOAT / MODAL ---------- */
+  .wpp-float { position: fixed; right: 24px; bottom: 24px; z-index: 300; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(37,211,102,.4); }
+  .wpp-float:hover { transform: scale(1.06); }
+  .wpp-float svg { width: 28px; height: 28px; color: #fff; }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(12,21,38,.6); z-index: 400; padding: 40px 20px; overflow-y: auto; align-items: flex-start; justify-content: center; }
+  .modal.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 16px; padding: 34px; max-width: 580px; width: 100%; position: relative; }
+  .modal-box h2 { font-size: 1.35rem; font-weight: 800; margin-bottom: 14px; }
+  .modal-box h3 { font-size: .92rem; color: var(--blue); font-weight: 700; margin: 18px 0 6px; }
+  .modal-box p { font-size: .86rem; color: var(--muted); line-height: 1.75; }
+  .modal-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 1.3rem; color: var(--muted); cursor: pointer; line-height: 1; }
+
+  /* ---------- REVEAL ---------- */
+  .rv { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+  .rv.on { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .rv { opacity: 1; transform: none; } html { scroll-behavior: auto; } }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1180px) {
+    .cards-4 { grid-template-columns: repeat(2, 1fr); }
+    .plans { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(3, 1fr); }
+    .contacts { grid-template-columns: repeat(2, 1fr); }
+    .sec-head { grid-template-columns: 1fr; align-items: start; gap: 14px; }
   }
-  @media(max-width:768px) {
-    .nav-links, .nav-cta { display: none; }
-    .hamburger { display: flex; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-group.full { grid-column: 1; }
-    .form-wrapper { padding: 24px 18px; }
-    section { padding: 58px 5%; }
-    .hero-stats { gap: 22px; }
+  @media (max-width: 1080px) {
+    :root { --sidebar-w: 0px; }
+    .sidebar { transform: translateX(-100%); transition: transform .25s ease; width: 270px; }
+    .sidebar.open { transform: translateX(0); }
+    .topbar { display: flex; }
+    .main { margin-left: 0; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { padding: 34px 24px 44px; }
+    .hero-note { position: static; text-align: left; margin-bottom: 20px; }
+    .hero-note .nl { margin-left: 0; }
   }
-  @media(max-width:580px) {
-    .kpi-row-4 { grid-template-columns: 1fr 1fr; }
-    .chart-2, .chart-eq { grid-template-columns: 1fr; }
-    .pricing-grid { grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    .about { grid-template-columns: 1fr; gap: 28px; }
+    .compare { grid-template-columns: 1fr; }
+    .cta-strip { grid-template-columns: 1fr; text-align: left; }
+    .cta-strip .cs-note { border-left: none; padding-left: 0; border-top: 1px solid var(--blue-100); padding-top: 16px; }
+    .charts.c2, .charts.ceq { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .cards-4, .cards-3, .cards-2 { grid-template-columns: 1fr; }
+    .plans, .plans.p3 { grid-template-columns: 1fr; }
+    .ways { grid-template-columns: 1fr; }
+    .fgrid { grid-template-columns: 1fr; }
+    .fg.full { grid-column: 1; }
+    .form-card { padding: 24px 20px; }
+    .contacts { grid-template-columns: 1fr; }
+    .kpis.k4 { grid-template-columns: repeat(2,1fr); }
+    .kpis.k3 { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+    .hero-btns .btn { width: 100%; }
+    .pipe .arw { display: none; }
+    .cat-sub { padding-left: 0; }
+    .final-cta { padding: 34px 22px; }
   }
 </style>
 </head>
 <body>
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
 
-<!-- NAV -->
-<nav id="navbar">
-  <a href="#hero" class="nav-logo-wrap">
-    <!-- <img src="./logo-lumanoids.png" alt="Lumanoids" class="nav-logo-img"> -->
-    <span class="nav-logo-text">Lumanoids</span>
+<!-- ÍCONES -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="i-home" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5"/></g>
+    <g id="i-chart" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="7" y="12" width="3" height="5" rx="1"/><rect x="12.5" y="8" width="3" height="9" rx="1"/><rect x="18" y="14" width="3" height="3" rx="1"/></g>
+    <g id="i-gear" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></g>
+    <g id="i-bulb" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.5.4.8 1 .9 1.6l.1.6h5.2l.1-.6c.1-.6.4-1.2.9-1.6A6 6 0 0 0 12 3z"/></g>
+    <g id="i-folder" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4.2l2 2.4h8.8A1.5 1.5 0 0 1 21 9.9v8.6a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/></g>
+    <g id="i-file" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a1.5 1.5 0 0 0-1.5 1.5v15A1.5 1.5 0 0 0 7 21h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"/><path d="M14 3v4.5h4.5"/><path d="M9 12.5h6M9 16h4"/></g>
+    <g id="i-user" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></g>
+    <g id="i-mail" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.8 7 7.2 5.6a1.6 1.6 0 0 0 2 0L20.2 7"/></g>
+    <g id="i-clock" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.3l3.4 2"/></g>
+    <g id="i-target" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></g>
+    <g id="i-db" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></g>
+    <g id="i-link" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13.5a4 4 0 0 0 5.7.4l2.6-2.6a4 4 0 1 0-5.7-5.7l-1.5 1.5"/><path d="M14 10.5a4 4 0 0 0-5.7-.4l-2.6 2.6a4 4 0 1 0 5.7 5.7l1.5-1.5"/></g>
+    <g id="i-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m8.5 8.5-4 3.5 4 3.5"/><path d="m15.5 8.5 4 3.5-4 3.5"/><path d="m13.5 5-3 14"/></g>
+    <g id="i-table" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M9.5 9.5v10M15 9.5v10"/></g>
+    <g id="i-money" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2a2.8 2.8 0 0 0-2.5-1.4c-1.5 0-2.7.9-2.7 2.1s1.1 1.8 2.7 2.1 2.7.9 2.7 2.1-1.2 2.1-2.7 2.1a2.8 2.8 0 0 1-2.5-1.4"/><path d="M12 6v12"/></g>
+    <g id="i-search" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></g>
+    <g id="i-send" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10.5 13.5"/><path d="M21 3 14.5 21l-4-7.5L3 9.5z"/></g>
+    <g id="i-download" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><path d="m7.5 10 4.5 4.5 4.5-4.5"/><path d="M4 18.5v1A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5v-1"/></g>
+    <g id="i-broom" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5 20.5 10"/><path d="m16.5 6-9 9"/><path d="M9 13.5 4 18.5c-1 1-1 2.5 0 3.5s2.5 1 3.5 0l5-5z"/></g>
+    <g id="i-zap" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/></g>
+    <g id="i-hand" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.2a1.7 1.7 0 0 1 3.4 0V11"/><path d="M12.4 10.5V4.2a1.7 1.7 0 0 1 3.4 0v6.8"/><path d="M15.8 11V6.7a1.7 1.7 0 0 1 3.4 0V15a6 6 0 0 1-6 6h-1.4a5 5 0 0 1-3.6-1.6l-3.6-4a1.7 1.7 0 0 1 2.3-2.4L9 14.4V8.5a1.7 1.7 0 0 1 3.4 0"/></g>
+    <g id="i-check" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></g>
+    <g id="i-arrow" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></g>
+    <g id="i-layers" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3.5 12.5 8.5 4.7 8.5-4.7"/><path d="m3.5 16.5 8.5 4.7 8.5-4.7"/></g>
+    <path id="i-wpp" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.112 1.523 5.844L.057 23.429a.75.75 0 0 0 .933.933l5.585-1.466A11.946 11.946 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.734 9.734 0 0 1-4.92-1.336l-.352-.21-3.645.957.972-3.553-.228-.366A9.75 9.75 0 1 1 12 21.75z"/>
+  </defs>
+</svg>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <a href="#hero" class="sb-logo">Lumanoids</a>
+    <div class="sb-tagline">Dados • Automação • Inteligência</div>
+  </div>
+  <div class="sb-rule"></div>
+  <nav class="sb-nav" id="sbNav">
+    <a href="#hero" class="sb-link active" data-sec="hero"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg> Início</a>
+    <a href="#dados" class="sb-link" data-sec="dados"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg> Dados &amp; BI</a>
+    <a href="#automacao" class="sb-link" data-sec="automacao"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg> Automação</a>
+    <a href="#servicos" class="sb-link" data-sec="servicos"><svg viewBox="0 0 24 24"><use href="#i-bulb"/></svg> Soluções</a>
+    <a href="#portfolio" class="sb-link" data-sec="portfolio"><svg viewBox="0 0 24 24"><use href="#i-folder"/></svg> Portfólio</a>
+    <a href="#solicitacoes" class="sb-link" data-sec="solicitacoes"><svg viewBox="0 0 24 24"><use href="#i-file"/></svg> Solicitações</a>
+    <a href="#sobre" class="sb-link" data-sec="sobre"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg> Sobre</a>
+    <a href="#contato" class="sb-link" data-sec="contato"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg> Contato</a>
+  </nav>
+  <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="sb-wpp">
+    <svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Falar no WhatsApp
   </a>
-  <ul class="nav-links">
-    <li><a href="#precos">Planos</a></li>
-    <li><a href="#como-funciona">Como funciona</a></li>
-    <li><a href="#portfolio">Dashboards</a></li>
-    <li><a href="#sobre">Sobre</a></li>
-    <li><a href="#contato">Contato</a></li>
-  </ul>
-  <a href="https://wa.me/5511998899271" target="_blank" class="nav-cta">Falar no WhatsApp</a>
-  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
-</nav>
-<div class="mobile-menu" id="mobileMenu">
-  <a href="#precos" onclick="closeMobile()">Planos e Preços</a>
-  <a href="#como-funciona" onclick="closeMobile()">Como funciona</a>
-  <a href="#portfolio" onclick="closeMobile()">Dashboards</a>
-  <a href="#sobre" onclick="closeMobile()">Sobre</a>
-  <a href="#contato" onclick="closeMobile()">Contato</a>
-  <a href="https://wa.me/5511998899271" target="_blank" class="btn-primary m-cta" onclick="closeMobile()" style="justify-content:center">Falar no WhatsApp</a>
-</div>
+  <div class="sb-foot">
+    <div class="sb-quote">Transformando dados em decisões e processos manuais em automações.</div>
+    <p>© 2025 Lumanoids.<br>Todos os direitos reservados.</p>
+  </div>
+</aside>
+<div class="sb-overlay" id="sbOverlay"></div>
 
-<!-- HERO — sem logo placeholder -->
-<section id="hero">
-  <div class="hero-inner">
-    <div class="hero-badge"><span></span> Dados que geram resultado</div>
-    <h1>Não é sobre ter dados.<br><span class="gradient">É sobre entender e agir.</span></h1>
-    <p class="hero-sub">A Lumanoids transforma dados complexos em dashboards claros, organizados e prontos para guiar suas decisões estratégicas.</p>
+<!-- TOPBAR (mobile) -->
+<header class="topbar">
+  <a href="#hero" class="tb-logo">Lumanoids</a>
+  <div class="tb-actions">
+    <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="tb-wpp" aria-label="Falar no WhatsApp">
+      <svg viewBox="0 0 24 24" fill="#4ADE80"><use href="#i-wpp"/></svg>
+    </a>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="main">
+
+<!-- HERO -->
+<section id="hero" class="hero">
+  <div class="hero-left">
+    <p class="eyebrow">Dados &nbsp;•&nbsp; Automação &nbsp;•&nbsp; Inteligência</p>
+    <h1>Soluções que transformam <span class="blue">o seu negócio.</span></h1>
+    <p class="sub">Dashboards, análise de dados e automações para tornar sua empresa mais eficiente. Você foca no resultado, a Lumanoids cuida da solução.</p>
     <div class="hero-btns">
-      <a href="https://wa.me/5511998899271" target="_blank" class="btn-primary">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.112 1.523 5.844L.057 23.429a.75.75 0 0 0 .933.933l5.585-1.466A11.946 11.946 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.734 9.734 0 0 1-4.92-1.336l-.352-.21-3.645.957.972-3.553-.228-.366A9.75 9.75 0 1 1 12 21.75z"/></svg>
-        Falar no WhatsApp
-      </a>
-      <a href="#orcamento" class="btn-secondary">Solicitar orçamento <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></a>
+      <a href="#solicitacoes" class="btn btn-blue"><svg viewBox="0 0 24 24"><use href="#i-file"/></svg> Solicitar um projeto</a>
+      <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="btn btn-wpp"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Falar no WhatsApp</a>
     </div>
-    <div class="hero-stats">
-      <div class="stat-item"><div class="stat-num">+50</div><div class="stat-label">Dashboards entregues</div></div>
-      <div class="stat-item"><div class="stat-num">3x</div><div class="stat-label">Mais agilidade nas decisões</div></div>
-      <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Foco em resultado</div></div>
+    <div class="hero-feats">
+      <div class="hero-feat"><svg viewBox="0 0 24 24"><use href="#i-clock"/></svg> Mais eficiência</div>
+      <div class="hero-feat"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg> Menos trabalho manual</div>
+      <div class="hero-feat"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg> Melhores decisões</div>
     </div>
   </div>
-</section>
-
-<!-- BENEFÍCIOS -->
-<section id="beneficios">
-  <div class="max-w">
-    <div class="center reveal">
-      <p class="section-label">Por que Lumanoids</p>
-      <h2 class="section-title">Clareza que transforma negócios</h2>
-      <p class="section-sub">Chega de decisões no escuro. Com a Lumanoids, seus dados viram informação e informação vira ação.</p>
-    </div>
-    <div class="benefits-grid">
-      <div class="benefit-card reveal"><div class="benefit-icon">📊</div><h3>Visibilidade total</h3><p>Enxergue o que realmente importa com dashboards diretos e intuitivos.</p></div>
-      <div class="benefit-card reveal"><div class="benefit-icon">⚡</div><h3>Rapidez na decisão</h3><p>Menos tempo buscando dados, mais tempo tomando as decisões certas.</p></div>
-      <div class="benefit-card reveal"><div class="benefit-icon">🎯</div><h3>Foco no resultado</h3><p>Indicadores que fazem sentido pro seu negócio, não relatórios genéricos.</p></div>
-      <div class="benefit-card reveal"><div class="benefit-icon">🔒</div><h3>Controle e segurança</h3><p>Seus dados organizados, acessíveis e sob controle, quando você precisar.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- PREÇOS -->
-<section id="precos">
-  <div class="max-w">
-    <div class="center reveal">
-      <p class="section-label">Planos e preços</p>
-      <h2 class="section-title">Invista no tamanho certo<br>para o seu negócio</h2>
-      <p class="section-sub">Do dashboard inicial ao painel executivo completo com automações.</p>
-    </div>
-    <div class="pricing-grid">
-      <div class="price-card green reveal">
-        <span class="price-badge badge-green">Básico</span>
-        <h3>Plano Básico</h3>
-        <div class="price-amount"><div class="price-from">A partir de</div><div class="price-value"><span>R$</span>150</div><div class="price-period">por dashboard</div></div>
-        <span class="manutencao-tag tag-none">✕ Sem manutenção</span>
-        <ul class="price-features"><li>Até 1 tabela de dados</li><li>Até 10 KPIs</li><li>Visualização simples</li><li>Entrega rápida</li></ul>
-        <a href="#orcamento" class="btn-secondary" style="justify-content:center;width:100%">Solicitar</a>
-      </div>
-      <div class="price-card yellow reveal">
-        <span class="price-badge badge-yellow">Intermediário</span>
-        <h3>Plano Intermediário</h3>
-        <div class="price-amount"><div class="price-from">A partir de</div><div class="price-value" style="color:#eab308"><span>R$</span>300</div><div class="price-period">por dashboard</div></div>
-        <span class="manutencao-tag tag-none">✕ Sem manutenção</span>
-        <ul class="price-features"><li>Até 3 tabelas de dados</li><li>Até 20 KPIs</li><li>Modelagem de dados</li><li>Filtros interativos</li></ul>
-        <a href="#orcamento" class="btn-secondary" style="justify-content:center;width:100%;border-color:rgba(234,179,8,.4)">Solicitar</a>
-      </div>
-      <div class="price-card red reveal">
-        <span class="price-badge badge-red">Avançado</span>
-        <h3>Plano Avançado</h3>
-        <div class="price-amount"><div class="price-from">A partir de</div><div class="price-value" style="color:#ef4444"><span>R$</span>600</div><div class="price-period">por dashboard</div></div>
-        <span class="manutencao-tag tag-included">✓ Manutenção 20 dias</span>
-        <ul class="price-features"><li>Até 6 tabelas de dados</li><li>Até 20 KPIs</li><li>Indicadores complexos</li><li>Tratamento de dados</li><li>Manutenção por 20 dias</li></ul>
-        <a href="#orcamento" class="btn-secondary" style="justify-content:center;width:100%;border-color:rgba(239,68,68,.4)">Solicitar</a>
-      </div>
-      <div class="price-card gold reveal">
-        <span class="price-badge badge-gold">⭐ Dourado</span>
-        <h3>Plano Dourado</h3>
-        <div class="price-amount"><div class="price-from">A partir de</div><div class="price-value" style="color:#f59e0b"><span>R$</span>1.500</div><div class="price-period">por projeto</div></div>
-        <span class="manutencao-tag tag-included">✓ Manutenção 20 dias</span>
-        <ul class="price-features"><li>Até 10+ tabelas de dados</li><li>Indicadores complexos</li><li>Tratamento de dados</li><li>ETL e automações</li><li>Suporte prioritário</li><li>Manutenção por 20 dias</li></ul>
-        <a href="#orcamento" class="btn-primary" style="justify-content:center;width:100%;background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 0 24px rgba(245,158,11,.3)">Solicitar agora</a>
-      </div>
-    </div>
-    <div class="price-disclaimer reveal">
-      <p><strong>⚠️ Valores podem variar conforme a complexidade do projeto</strong><br>Escopo definido previamente ao início do desenvolvimento &nbsp;•&nbsp; Ajustes pós-entrega: sob avaliação</p>
-    </div>
-  </div>
-</section>
-
-<!-- COMO FUNCIONA -->
-<section id="como-funciona">
-  <div class="max-w">
-    <div class="center reveal">
-      <p class="section-label">Processo</p>
-      <h2 class="section-title">Simples, rápido e direto</h2>
-      <p class="section-sub">Do primeiro contato à entrega do dashboard, um processo claro e sem surpresas.</p>
-    </div>
-    <div class="steps">
-      <div class="step reveal"><div class="step-num">01</div><h3>Briefing</h3><p>Entendemos seus objetivos, fontes de dados e o que você precisa visualizar.</p></div>
-      <div class="step reveal"><div class="step-num">02</div><h3>Proposta</h3><p>Apresentamos a solução com escopo, prazo e investimento definidos.</p></div>
-      <div class="step reveal"><div class="step-num">03</div><h3>Desenvolvimento</h3><p>Criamos o dashboard com foco em clareza, usabilidade e suas necessidades.</p></div>
-      <div class="step reveal"><div class="step-num">04</div><h3>Entrega</h3><p>Entregamos com treinamento e suporte para você usar com total autonomia.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- DASHBOARDS -->
-<section id="portfolio">
-  <div class="max-w">
-    <div class="center reveal">
-      <p class="section-label">Exemplos de dashboards</p>
-      <h2 class="section-title">Veja como seus dados<br>podem aparecer</h2>
-      <p class="section-sub">Dashboards interativos criados pela Lumanoids para diferentes áreas do negócio.</p>
-    </div>
-    <div class="portfolio-tabs reveal">
-      <button class="tab-btn active" onclick="showDash('financeiro',this)">💰 Financeiro</button>
-      <button class="tab-btn" onclick="showDash('ecommerce',this)">🛒 E-commerce</button>
-      <button class="tab-btn" onclick="showDash('equipe',this)">👥 Gestão de Equipe</button>
-      <button class="tab-btn" onclick="showDash('vendas',this)">📈 Vendas</button>
-    </div>
-    <!-- FINANCEIRO -->
-    <div class="dashboard-display reveal" id="dash-financeiro">
-      <div class="dash-wrap"><div class="dash-inner">
-        <div class="dash-header"><span class="dash-title">💰 Dashboard Financeiro — Jan/2025</span><span class="dash-date">Atualizado hoje</span></div>
-        <div class="kpi-row kpi-row-4">
-          <div class="kpi-card"><div class="kpi-label">Receita Total</div><div class="kpi-value" style="color:#22c55e">R$ 284k</div><div class="kpi-change up">▲ 12% vs mês anterior</div></div>
-          <div class="kpi-card"><div class="kpi-label">Despesas</div><div class="kpi-value" style="color:#ef4444">R$ 189k</div><div class="kpi-change down">▲ 5% vs mês anterior</div></div>
-          <div class="kpi-card"><div class="kpi-label">Lucro Líquido</div><div class="kpi-value" style="color:#00C8E8">R$ 95k</div><div class="kpi-change up">▲ 18% vs mês anterior</div></div>
-          <div class="kpi-card"><div class="kpi-label">Margem Líquida</div><div class="kpi-value">33,4%</div><div class="kpi-change up">▲ 2,1pp</div></div>
-        </div>
-        <div class="chart-row chart-2">
-          <div class="chart-box">
-            <div class="chart-box-title">Receita x Despesa (6 meses)</div>
-            <div class="bar-chart">
-              <div class="bar" style="height:55%;background:#22c55e88"></div><div class="bar" style="height:38%;background:#ef444466"></div>
-              <div class="bar" style="height:62%;background:#22c55e88"></div><div class="bar" style="height:41%;background:#ef444466"></div>
-              <div class="bar" style="height:71%;background:#22c55e88"></div><div class="bar" style="height:44%;background:#ef444466"></div>
-              <div class="bar" style="height:68%;background:#22c55e88"></div><div class="bar" style="height:42%;background:#ef444466"></div>
-              <div class="bar" style="height:80%;background:#22c55ecc"></div><div class="bar" style="height:47%;background:#ef4444aa"></div>
-              <div class="bar" style="height:90%;background:#22c55e"></div><div class="bar" style="height:50%;background:#ef4444"></div>
+  <div class="hero-right">
+    <p class="hero-note"><span class="nl"></span>Dados bem utilizados<br>geram grandes<br>resultados.</p>
+    <div class="monitor">
+      <div class="monitor-screen">
+        <div class="mon-rail"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="mon-body">
+          <div class="mon-h">Visão Geral</div>
+          <div class="mon-kpis">
+            <div class="mon-kpi"><div class="k">Receita</div><div class="v">R$ 1,2M</div><div class="d">↑ 12%</div></div>
+            <div class="mon-kpi"><div class="k">Clientes</div><div class="v">892</div><div class="d">↑ 8%</div></div>
+            <div class="mon-kpi"><div class="k">Processos automatizados</div><div class="v">24</div><div class="d">↑ 100%</div></div>
+            <div class="mon-kpi"><div class="k">Tempo economizado</div><div class="v">120h</div><div class="d">↑ 35%</div></div>
+          </div>
+          <div class="mon-row r2">
+            <div class="mon-card">
+              <div class="ct">Evolução da Receita <span class="mon-legend"><span><i style="background:#60A5FA"></i>2024</span><span><i style="background:#F59E0B"></i>2025</span></span></div>
+              <svg viewBox="0 0 220 62" style="width:100%;height:62px">
+                <polyline points="6,50 42,44 78,38 114,30 150,26 186,14" fill="none" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="6,54 42,52 78,44 114,42 150,34 186,28" fill="none" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="186" cy="14" r="2.4" fill="#60A5FA"/><circle cx="186" cy="28" r="2" fill="#F59E0B"/>
+              </svg>
+              <div class="mon-axis"><span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span></div>
             </div>
-            <div style="display:flex;gap:14px;margin-top:9px;font-size:0.66rem;color:var(--gray)">
-              <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#22c55e;border-radius:2px;display:inline-block"></span>Receita</span>
-              <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;background:#ef4444;border-radius:2px;display:inline-block"></span>Despesa</span>
+            <div class="mon-card">
+              <div class="ct">Distribuição</div>
+              <div class="mon-donut">
+                <svg width="52" height="52" viewBox="0 0 42 42">
+                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#1D4ED8" stroke-width="7" stroke-dasharray="42 58" stroke-dashoffset="25"/>
+                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#60A5FA" stroke-width="7" stroke-dasharray="26 74" stroke-dashoffset="-17"/>
+                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#93C5FD" stroke-width="7" stroke-dasharray="18 82" stroke-dashoffset="-43"/>
+                  <circle cx="21" cy="21" r="15.9" fill="none" stroke="#CBD5E1" stroke-width="7" stroke-dasharray="14 86" stroke-dashoffset="-61"/>
+                </svg>
+                <div class="mon-donut-legend">
+                  <span><i style="background:#1D4ED8"></i>Vendas</span>
+                  <span><i style="background:#60A5FA"></i>Financeiro</span>
+                  <span><i style="background:#93C5FD"></i>Operações</span>
+                  <span><i style="background:#CBD5E1"></i>Outros</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="chart-box">
-            <div class="chart-box-title">Distribuição de Gastos</div>
-            <div class="donut-wrap">
-              <svg width="75" height="75" viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r="30" fill="none" stroke="#7B3FE4" stroke-width="14" stroke-dasharray="75 114" stroke-dashoffset="-10"/>
-                <circle cx="40" cy="40" r="30" fill="none" stroke="#00C8E8" stroke-width="14" stroke-dasharray="45 144" stroke-dashoffset="-85"/>
-                <circle cx="40" cy="40" r="30" fill="none" stroke="#C43BE8" stroke-width="14" stroke-dasharray="30 159" stroke-dashoffset="-130"/>
-                <circle cx="40" cy="40" r="30" fill="none" stroke="#22c55e" stroke-width="14" stroke-dasharray="25 164" stroke-dashoffset="-160"/>
-              </svg>
-              <div class="donut-legend">
-                <div class="legend-item"><span class="legend-dot" style="background:#7B3FE4"></span>Pessoal 40%</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#00C8E8"></span>Operacional 24%</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#C43BE8"></span>Marketing 16%</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span>Outros 20%</div>
+          <div class="mon-row r2">
+            <div class="mon-card">
+              <div class="ct">Resultados por Área</div>
+              <div class="mon-bars"><div class="b" style="height:70%"></div><div class="b" style="height:52%"></div><div class="b" style="height:84%"></div><div class="b" style="height:40%"></div></div>
+              <div class="mon-axis"><span>Vendas</span><span>Financeiro</span><span>Operações</span><span>Suporte</span></div>
+            </div>
+            <div class="mon-card">
+              <div class="ct">Principais indicadores</div>
+              <div class="mon-hbars">
+                <div class="mon-hbar"><span class="lb">Faturamento</span><span class="tr"><span class="fl" style="width:88%;display:block"></span></span></div>
+                <div class="mon-hbar"><span class="lb">Clientes</span><span class="tr"><span class="fl" style="width:64%;display:block"></span></span></div>
+                <div class="mon-hbar"><span class="lb">Processos</span><span class="tr"><span class="fl" style="width:76%;display:block"></span></span></div>
+                <div class="mon-hbar"><span class="lb">Satisfação</span><span class="tr"><span class="fl" style="width:54%;display:block"></span></span></div>
               </div>
             </div>
           </div>
         </div>
-      </div></div>
+      </div>
     </div>
-    <!-- ECOMMERCE -->
-    <div class="dashboard-display reveal" id="dash-ecommerce" style="display:none">
-      <div class="dash-wrap"><div class="dash-inner">
-        <div class="dash-header"><span class="dash-title">🛒 Dashboard E-commerce — Março/2025</span><span class="dash-date">Ao vivo</span></div>
-        <div class="kpi-row kpi-row-4">
-          <div class="kpi-card"><div class="kpi-label">Pedidos</div><div class="kpi-value" style="color:#00C8E8">1.847</div><div class="kpi-change up">▲ 23% esta semana</div></div>
-          <div class="kpi-card"><div class="kpi-label">GMV</div><div class="kpi-value" style="color:#22c55e">R$ 412k</div><div class="kpi-change up">▲ 31% vs período</div></div>
-          <div class="kpi-card"><div class="kpi-label">Ticket Médio</div><div class="kpi-value">R$ 223</div><div class="kpi-change up">▲ R$ 18</div></div>
-          <div class="kpi-card"><div class="kpi-label">Conversão</div><div class="kpi-value" style="color:#f59e0b">3,2%</div><div class="kpi-change up">▲ 0,4pp</div></div>
-        </div>
-        <div class="chart-row chart-eq">
-          <div class="chart-box">
-            <div class="chart-box-title">Top Categorias</div>
-            <div class="hbar-list">
-              <div class="hbar-item"><div class="hbar-label">Eletrônicos</div><div class="hbar-track"><div class="hbar-fill" style="width:85%;background:linear-gradient(90deg,#7B3FE4,#C43BE8)"></div></div><div class="hbar-val" style="color:#fff">R$185k</div></div>
-              <div class="hbar-item"><div class="hbar-label">Moda</div><div class="hbar-track"><div class="hbar-fill" style="width:62%;background:linear-gradient(90deg,#00C8E8,#7B3FE4)"></div></div><div class="hbar-val">R$98k</div></div>
-              <div class="hbar-item"><div class="hbar-label">Casa</div><div class="hbar-track"><div class="hbar-fill" style="width:44%;background:linear-gradient(90deg,#22c55e,#00C8E8)"></div></div><div class="hbar-val">R$72k</div></div>
-              <div class="hbar-item"><div class="hbar-label">Esporte</div><div class="hbar-track"><div class="hbar-fill" style="width:28%;background:#f59e0b"></div></div><div class="hbar-val">R$37k</div></div>
-            </div>
-          </div>
-          <div class="chart-box">
-            <div class="chart-box-title">Status de Pedidos</div>
-            <table class="mini-table">
-              <tr><th>Status</th><th>Qtd</th><th>%</th></tr>
-              <tr><td><span class="badge-sm" style="background:rgba(34,197,94,.15);color:#22c55e">Entregue</span></td><td>1.204</td><td>65%</td></tr>
-              <tr><td><span class="badge-sm" style="background:rgba(245,158,11,.15);color:#f59e0b">Em trânsito</span></td><td>481</td><td>26%</td></tr>
-              <tr><td><span class="badge-sm" style="background:rgba(0,200,232,.15);color:#00C8E8">Aguardando</span></td><td>110</td><td>6%</td></tr>
-              <tr><td><span class="badge-sm" style="background:rgba(239,68,68,.15);color:#ef4444">Devolvido</span></td><td>52</td><td>3%</td></tr>
-            </table>
-          </div>
-        </div>
-      </div></div>
+  </div>
+</section>
+
+<!-- NOSSOS SERVIÇOS -->
+<section id="servicos" class="band band-bg">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <p class="eyebrow">Soluções práticas para o seu dia a dia</p>
+        <h2 class="title">Nossos serviços</h2>
+      </div>
+      <p class="lead">Cuidamos de todo o processo, da análise dos dados à automação, para que sua empresa ganhe tempo, reduza erros e tome melhores decisões.</p>
+      <a href="#catalogo" class="link-more">Ver todos os serviços <svg viewBox="0 0 24 24" width="15" height="15"><use href="#i-arrow"/></svg></a>
     </div>
-    <!-- EQUIPE -->
-    <div class="dashboard-display reveal" id="dash-equipe" style="display:none">
-      <div class="dash-wrap"><div class="dash-inner">
-        <div class="dash-header"><span class="dash-title">👥 Dashboard Gestão de Equipe — Q1 2025</span><span class="dash-date">Mensal</span></div>
-        <div class="kpi-row kpi-row-4">
-          <div class="kpi-card"><div class="kpi-label">Colaboradores</div><div class="kpi-value">48</div><div class="kpi-change up">▲ 3 contratações</div></div>
-          <div class="kpi-card"><div class="kpi-label">Produtividade</div><div class="kpi-value" style="color:#22c55e">87%</div><div class="kpi-change up">▲ 5% vs trim. ant.</div></div>
-          <div class="kpi-card"><div class="kpi-label">Absenteísmo</div><div class="kpi-value" style="color:#ef4444">3,1%</div><div class="kpi-change down">▼ 0,8pp (melhora)</div></div>
-          <div class="kpi-card"><div class="kpi-label">eNPS</div><div class="kpi-value" style="color:#7B3FE4">72</div><div class="kpi-change up">▲ 8 pontos</div></div>
-        </div>
-        <div class="chart-row chart-eq">
-          <div class="chart-box">
-            <div class="chart-box-title">Produtividade por Equipe</div>
-            <div class="hbar-list">
-              <div class="hbar-item"><div class="hbar-label">Vendas</div><div class="hbar-track"><div class="hbar-fill" style="width:92%;background:linear-gradient(90deg,#22c55e,#00C8E8)"></div></div><div class="hbar-val" style="color:#22c55e">92%</div></div>
-              <div class="hbar-item"><div class="hbar-label">Suporte</div><div class="hbar-track"><div class="hbar-fill" style="width:88%;background:linear-gradient(90deg,#00C8E8,#7B3FE4)"></div></div><div class="hbar-val">88%</div></div>
-              <div class="hbar-item"><div class="hbar-label">Marketing</div><div class="hbar-track"><div class="hbar-fill" style="width:81%;background:linear-gradient(90deg,#7B3FE4,#C43BE8)"></div></div><div class="hbar-val">81%</div></div>
-              <div class="hbar-item"><div class="hbar-label">TI</div><div class="hbar-track"><div class="hbar-fill" style="width:79%;background:#f59e0b"></div></div><div class="hbar-val">79%</div></div>
-              <div class="hbar-item"><div class="hbar-label">Financeiro</div><div class="hbar-track"><div class="hbar-fill" style="width:85%;background:linear-gradient(90deg,#C43BE8,#7B3FE4)"></div></div><div class="hbar-val">85%</div></div>
-            </div>
-          </div>
-          <div class="chart-box">
-            <div class="chart-box-title">Treinamentos Concluídos</div>
-            <table class="mini-table">
-              <tr><th>Colaborador</th><th>Módulos</th><th>Status</th></tr>
-              <tr><td>Ana Lima</td><td>8/8</td><td><span class="badge-sm" style="background:rgba(34,197,94,.15);color:#22c55e">100%</span></td></tr>
-              <tr><td>Carlos M.</td><td>6/8</td><td><span class="badge-sm" style="background:rgba(245,158,11,.15);color:#f59e0b">75%</span></td></tr>
-              <tr><td>Beatriz S.</td><td>8/8</td><td><span class="badge-sm" style="background:rgba(34,197,94,.15);color:#22c55e">100%</span></td></tr>
-              <tr><td>Rafael T.</td><td>4/8</td><td><span class="badge-sm" style="background:rgba(239,68,68,.15);color:#ef4444">50%</span></td></tr>
-            </table>
-          </div>
-        </div>
-      </div></div>
+    <div class="cards-4">
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><div><h3>Dashboards em Power BI</h3><p>Painéis visuais e interativos para acompanhar seus resultados.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg></div><div><h3>Automação de Processos</h3><p>Eliminamos tarefas repetitivas e criamos fluxos automáticos.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-table"/></svg></div><div><h3>Programação em VBA</h3><p>Soluções e macros personalizadas em Excel.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-code"/></svg></div><div><h3>Programação em Python</h3><p>Automações e análises avançadas para o seu negócio.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div><div><h3>Envio de e-mails automáticos</h3><p>Disparo automático de relatórios, alertas e comunicados.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-file"/></svg></div><div><h3>Relatórios Gerenciais</h3><p>Informações organizadas para apoiar a sua gestão.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-money"/></svg></div><div><h3>Relatórios Financeiros</h3><p>Controle financeiro, fluxo de caixa, DRE e indicadores.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-db"/></svg></div><div><h3>Tratamento e Organização de Dados</h3><p>Limpeza, padronização e consolidação de bases.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg></div><div><h3>Integração de Sistemas</h3><p>Conexão entre diferentes fontes de dados e ferramentas.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-download"/></svg></div><div><h3>Geração Automática de Arquivos</h3><p>Criação de planilhas, PDFs e outros formatos de forma automática.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg></div><div><h3>Análise de Dados</h3><p>Transformamos dados em informações claras e úteis.</p></div></div>
+      <div class="card rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-bulb"/></svg></div><div><h3>Soluções Personalizadas</h3><p>Tem um desafio específico? Criamos a solução ideal para você.</p></div></div>
     </div>
-    <!-- VENDAS -->
-    <div class="dashboard-display reveal" id="dash-vendas" style="display:none">
-      <div class="dash-wrap"><div class="dash-inner">
-        <div class="dash-header"><span class="dash-title">📈 Dashboard Comercial — Março/2025</span><span class="dash-date">Semanal</span></div>
-        <div class="kpi-row kpi-row-4">
-          <div class="kpi-card"><div class="kpi-label">Vendas do Mês</div><div class="kpi-value" style="color:#22c55e">R$ 347k</div><div class="kpi-change up">▲ 19% vs meta</div></div>
-          <div class="kpi-card"><div class="kpi-label">Meta</div><div class="kpi-value">R$ 291k</div><div class="kpi-change up">✓ Superada</div></div>
-          <div class="kpi-card"><div class="kpi-label">Novos Clientes</div><div class="kpi-value" style="color:#00C8E8">64</div><div class="kpi-change up">▲ 12 vs mês ant.</div></div>
-          <div class="kpi-card"><div class="kpi-label">Fechamento</div><div class="kpi-value" style="color:#f59e0b">28%</div><div class="kpi-change up">▲ 3pp</div></div>
+
+    <div class="cta-strip rv" style="margin-top:26px">
+      <div class="cs-ico"><svg viewBox="0 0 24 24" width="22" height="22"><use href="#i-file"/></svg></div>
+      <div>
+        <h3>Tem um projeto em mente?</h3>
+        <p>Conte para a Lumanoids o que você precisa. Nós analisamos e encontramos a melhor solução.</p>
+      </div>
+      <div class="cs-btns">
+        <a href="#solicitacoes" class="btn btn-blue btn-sm"><svg viewBox="0 0 24 24"><use href="#i-file"/></svg> Enviar uma solicitação</a>
+        <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="btn btn-wpp btn-sm"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Falar no WhatsApp</a>
+      </div>
+      <div class="cs-note">Mais que dados.<br>Soluções para<br>o seu negócio.</div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTOMAÇÃO -->
+<section id="automacao" class="band">
+  <div class="wrap">
+    <div class="sec-head-center rv">
+      <p class="eyebrow">Automação de processos</p>
+      <h2 class="title">Automatize o que hoje consome seu tempo</h2>
+      <p class="lead" style="margin-top:12px">Se uma tarefa é repetitiva, manual e acontece sempre da mesma forma, provavelmente ela pode ser automatizada.</p>
+    </div>
+    <div class="cards-4">
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-table"/></svg></div><h3>Planilhas que se atualizam sozinhas</h3><p>Chega de abrir o mesmo Excel toda manhã para colar dados novos e refazer as fórmulas.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-file"/></svg></div><h3>Relatórios prontos sem você montar</h3><p>O relatório de todo dia, toda semana ou todo mês passa a ser gerado automaticamente.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></div><h3>E-mails enviados no automático</h3><p>Relatórios e comunicados chegam nas pessoas certas, na hora certa, sem alguém lembrar de enviar.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg></div><h3>Processos manuais eliminados</h3><p>Aquela sequência de tarefas que sempre alguém precisa fazer na mão passa a rodar sozinha.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-download"/></svg></div><h3>Arquivos gerados automaticamente</h3><p>Planilhas, PDFs e relatórios criados e salvos no formato e no lugar certo, sem trabalho manual.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg></div><h3>Sistemas que passam a conversar</h3><p>Informação sai de um lugar e chega no outro sem ninguém exportar, copiar e colar.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-broom"/></svg></div><h3>Dados tratados e consolidados</h3><p>Vários arquivos, formatos e fontes viram uma base única, limpa e confiável.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><h3>Indicadores sempre atualizados</h3><p>Seus números acompanham o dia a dia da empresa sem depender de atualização manual.</p></div>
+    </div>
+
+    <div class="sec-head-center rv" style="margin-top:64px">
+      <h2 class="title">O mesmo trabalho, sem o trabalho</h2>
+      <p class="lead" style="margin-top:12px">Veja o que muda quando um processo repetitivo vira automação.</p>
+    </div>
+    <div class="compare">
+      <div class="comp-col before rv">
+        <div class="comp-head"><svg viewBox="0 0 24 24"><use href="#i-hand"/></svg> Antes</div>
+        <p class="comp-desc">Tudo feito na mão, toda vez, por uma pessoa.</p>
+        <div class="comp-steps">
+          <div class="comp-step"><span class="dot" style="background:#DC2626"></span> Baixar arquivos</div>
+          <div class="comp-step"><span class="dot" style="background:#DC2626"></span> Copiar e colar</div>
+          <div class="comp-step"><span class="dot" style="background:#DC2626"></span> Tratar dados</div>
+          <div class="comp-step"><span class="dot" style="background:#DC2626"></span> Criar relatório</div>
+          <div class="comp-step"><span class="dot" style="background:#DC2626"></span> Enviar e-mail</div>
         </div>
-        <div class="chart-row chart-2">
-          <div class="chart-box">
-            <div class="chart-box-title">Vendas por Vendedor</div>
-            <div class="hbar-list">
-              <div class="hbar-item"><div class="hbar-label">Mariana K.</div><div class="hbar-track"><div class="hbar-fill" style="width:95%;background:linear-gradient(90deg,#22c55e,#00C8E8)"></div></div><div class="hbar-val" style="color:#22c55e">R$89k</div></div>
-              <div class="hbar-item"><div class="hbar-label">Pedro N.</div><div class="hbar-track"><div class="hbar-fill" style="width:78%;background:linear-gradient(90deg,#00C8E8,#7B3FE4)"></div></div><div class="hbar-val">R$72k</div></div>
-              <div class="hbar-item"><div class="hbar-label">Camila R.</div><div class="hbar-track"><div class="hbar-fill" style="width:68%;background:linear-gradient(90deg,#7B3FE4,#C43BE8)"></div></div><div class="hbar-val">R$63k</div></div>
-              <div class="hbar-item"><div class="hbar-label">Diego M.</div><div class="hbar-track"><div class="hbar-fill" style="width:58%;background:#f59e0b"></div></div><div class="hbar-val">R$54k</div></div>
-              <div class="hbar-item"><div class="hbar-label">Luana P.</div><div class="hbar-track"><div class="hbar-fill" style="width:47%;background:#C43BE8"></div></div><div class="hbar-val">R$43k</div></div>
+        <p class="comp-loop">↻ E repetir tudo de novo na próxima vez</p>
+        <p class="comp-foot">Tempo gasto: <strong>horas todo mês</strong> · Risco de erro: <strong>alto</strong></p>
+      </div>
+      <div class="comp-col after rv">
+        <div class="comp-head"><svg viewBox="0 0 24 24"><use href="#i-zap"/></svg> Depois</div>
+        <p class="comp-desc">O processo roda sozinho e avisa quando termina.</p>
+        <div class="comp-steps">
+          <div class="comp-step"><span class="dot" style="background:#16A34A"></span> Automação inicia</div>
+          <div class="comp-step"><span class="dot" style="background:#16A34A"></span> Dados processados</div>
+          <div class="comp-step"><span class="dot" style="background:#16A34A"></span> Relatório atualizado</div>
+          <div class="comp-step"><span class="dot" style="background:#16A34A"></span> Envio automático</div>
+        </div>
+        <p class="comp-loop">✓ Acontece de novo sem ninguém precisar lembrar</p>
+        <p class="comp-foot">Sua equipe: <strong>livre para analisar e decidir</strong></p>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px" class="rv">
+      <a href="#solicitacoes" class="btn btn-blue" onclick="preSelect('Automação de processos')">Quero automatizar meu processo</a>
+      <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="btn btn-wpp"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Tirar uma dúvida</a>
+    </div>
+  </div>
+</section>
+
+<!-- DADOS & BI -->
+<section id="dados" class="band band-bg">
+  <div class="wrap">
+    <div class="sec-head-center rv">
+      <p class="eyebrow">Análise de dados &amp; BI</p>
+      <h2 class="title">Seus números finalmente fazendo sentido</h2>
+      <p class="lead" style="margin-top:12px">Organizamos as informações que hoje estão espalhadas e transformamos em painéis claros para acompanhar a empresa no dia a dia.</p>
+    </div>
+    <div class="cards-4">
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><h3>Dashboards em Power BI</h3><p>Painéis visuais para acompanhar sua empresa de forma simples, sem depender de planilhas.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></div><h3>Indicadores e KPIs</h3><p>Acompanhe vendas, financeiro, equipe, metas e resultados com números confiáveis.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-layers"/></svg></div><h3>Modelagem de dados</h3><p>Diferentes fontes organizadas de um jeito que permite analisar tudo junto.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-broom"/></svg></div><h3>Tratamento de dados</h3><p>Limpamos, padronizamos e organizamos dados espalhados em vários arquivos.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg></div><h3>Análise de desempenho</h3><p>Comparações, tendências e alertas para você enxergar o que está fora do esperado.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-file"/></svg></div><h3>Relatórios gerenciais</h3><p>Informações espalhadas viram relatórios fáceis de ler e de apresentar.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-table"/></svg></div><h3>Painéis executivos</h3><p>Uma visão resumida para quem precisa decidir rápido, sem entrar no detalhe.</p></div>
+      <div class="card card-block rv"><div class="card-ico"><svg viewBox="0 0 24 24"><use href="#i-bulb"/></svg></div><h3>Visualização de dados</h3><p>Gráficos e visuais escolhidos para comunicar, não só para enfeitar.</p></div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px" class="rv">
+      <a href="#solicitacoes" class="btn btn-blue" onclick="preSelect('Dashboard / Power BI')">Quero criar meu dashboard</a>
+      <a href="#portfolio" class="btn btn-ghost">Ver exemplos</a>
+    </div>
+  </div>
+</section>
+
+<!-- CATÁLOGO COMPLETO -->
+<section id="catalogo" class="band">
+  <div class="wrap">
+    <div class="sec-head-center rv">
+      <p class="eyebrow">Lista completa</p>
+      <h2 class="title">O que podemos fazer pela sua empresa?</h2>
+      <p class="lead" style="margin-top:12px">Sem termos técnicos. Veja se algum destes itens parece com o que acontece hoje na sua rotina.</p>
+    </div>
+
+    <div class="cat-group rv">
+      <div class="cat-head"><span class="ci"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></span><h3>Dados e dashboards</h3></div>
+      <p class="cat-sub">Para quem quer enxergar melhor os próprios números.</p>
+      <div class="cards-3">
+        <div class="card card-block"><h3>Dashboards em Power BI</h3><p>Transformamos seus dados em painéis visuais para você acompanhar sua empresa de forma simples.</p></div>
+        <div class="card card-block"><h3>Análise de dados</h3><p>Organizamos e analisamos seus dados para encontrar informações importantes para o negócio.</p></div>
+        <div class="card card-block"><h3>Indicadores e KPIs</h3><p>Criamos indicadores para acompanhar vendas, financeiro, equipe, metas, resultados e outros processos.</p></div>
+        <div class="card card-block"><h3>Relatórios gerenciais</h3><p>Transformamos informações espalhadas em relatórios fáceis de entender.</p></div>
+        <div class="card card-block"><h3>Modelagem de dados</h3><p>Organizamos diferentes fontes de dados para que elas possam ser analisadas juntas.</p></div>
+        <div class="card card-block"><h3>Tratamento e organização de dados</h3><p>Limpamos, organizamos e padronizamos dados que estão desorganizados ou espalhados em diferentes arquivos.</p></div>
+      </div>
+      <div class="cat-cta"><a href="#solicitacoes" class="btn btn-ghost btn-sm" onclick="preSelect('Dashboard / Power BI')">Solicitar uma solução</a></div>
+    </div>
+
+    <div class="cat-group rv">
+      <div class="cat-head"><span class="ci"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg></span><h3>Automação de processos</h3></div>
+      <p class="cat-sub">Para quem quer parar de fazer a mesma tarefa toda semana.</p>
+      <div class="cards-3">
+        <div class="card card-block"><h3>Automação de e-mails</h3><p>Automatizamos o envio de e-mails, relatórios, comunicados e informações para as pessoas certas.</p></div>
+        <div class="card card-block"><h3>Automação de relatórios</h3><p>Em vez de montar o mesmo relatório todos os dias ou todas as semanas, criamos processos para fazer isso automaticamente.</p></div>
+        <div class="card card-block"><h3>Automação de Excel</h3><p>Automatizamos tarefas repetitivas dentro do Excel para reduzir trabalho manual e erros.</p></div>
+        <div class="card card-block"><h3>Programação com VBA</h3><p>Criamos sistemas, botões, macros e automações dentro do Excel para facilitar processos.</p></div>
+        <div class="card card-block"><h3>Automação de planilhas</h3><p>Transformamos planilhas manuais em processos mais rápidos e inteligentes.</p></div>
+        <div class="card card-block"><h3>Geração automática de arquivos</h3><p>Criamos processos que geram automaticamente planilhas, relatórios, PDFs e outros arquivos.</p></div>
+        <div class="card card-block"><h3>Consolidação de arquivos</h3><p>Unimos automaticamente informações de vários arquivos e planilhas em uma única base.</p></div>
+        <div class="card card-block"><h3>Automação de processos administrativos</h3><p>Automatizamos tarefas repetitivas que hoje precisam ser feitas manualmente.</p></div>
+      </div>
+      <div class="cat-cta"><a href="#solicitacoes" class="btn btn-ghost btn-sm" onclick="preSelect('Automação de processos')">Solicitar uma solução</a></div>
+    </div>
+
+    <div class="cat-group rv">
+      <div class="cat-head"><span class="ci"><svg viewBox="0 0 24 24"><use href="#i-link"/></svg></span><h3>Integração e inteligência</h3></div>
+      <p class="cat-sub">Para quem precisa juntar informações que hoje vivem em lugares diferentes.</p>
+      <div class="cards-3">
+        <div class="card card-block"><h3>Integração de dados</h3><p>Conectamos informações de diferentes arquivos, sistemas e fontes.</p></div>
+        <div class="card card-block"><h3>Power Query</h3><p>Automatizamos a importação, limpeza e transformação de dados.</p></div>
+        <div class="card card-block"><h3>Power Automate</h3><p>Criamos fluxos automáticos para executar tarefas, enviar informações e movimentar processos.</p></div>
+        <div class="card card-block"><h3>Soluções com Python</h3><p>Desenvolvemos automações e soluções personalizadas para processos que precisam de uma programação mais avançada.</p></div>
+        <div class="card card-block"><h3>Automação personalizada</h3><p>Se existe uma tarefa repetitiva na sua empresa, analisamos o processo e buscamos uma forma de automatizá-lo.</p></div>
+      </div>
+      <div class="cat-cta"><a href="#solicitacoes" class="btn btn-ghost btn-sm" onclick="preSelect('Integração de dados / sistemas')">Solicitar uma solução</a></div>
+    </div>
+
+    <div class="big-card rv">
+      <h3>Sua necessidade não está em um pacote?</h3>
+      <p>Criamos soluções personalizadas de acordo com o seu processo, seus dados e os seus objetivos. Você não precisa saber qual tecnologia usar. Basta explicar o problema.</p>
+      <div class="quote-box">“Hoje eu preciso baixar vários arquivos, juntar as informações, criar um relatório e enviar por e-mail toda semana.”</div>
+      <p style="margin-bottom:22px">A Lumanoids analisa o processo e identifica o que pode ser automatizado e melhorado, combinando <strong style="color:var(--text)">Dados + BI + Automação</strong>.</p>
+      <a href="#solicitacoes" class="btn btn-blue" onclick="preSelect('Não sei ainda / preciso de ajuda')">Quero explicar meu processo</a>
+    </div>
+
+    <div class="tech rv">
+      <h4>Tecnologias que utilizamos</h4>
+      <div class="tech-items">
+        <span class="tech-item">Power BI</span><span class="tech-item">Excel</span><span class="tech-item">VBA</span><span class="tech-item">Power Query</span><span class="tech-item">Power Automate</span><span class="tech-item">Python</span><span class="tech-item">SQL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANOS -->
+<section id="precos" class="band band-bg">
+  <div class="wrap">
+    <div class="sec-head-center rv">
+      <p class="eyebrow">Planos e preços</p>
+      <h2 class="title">Investimento no tamanho certo para o seu projeto</h2>
+      <p class="lead" style="margin-top:12px">Todos os valores são um ponto de partida. O preço final depende da complexidade, das fontes de dados e do tamanho do processo.</p>
+    </div>
+    <div class="tabs rv">
+      <button class="tab active" onclick="showPlan('dash',this)">Dashboards</button>
+      <button class="tab" onclick="showPlan('auto',this)">Automação</button>
+      <button class="tab" onclick="showPlan('custom',this)">Soluções personalizadas</button>
+    </div>
+
+    <div id="plan-dash">
+      <p class="tab-note">Painéis em Power BI, do primeiro dashboard ao painel executivo completo.</p>
+      <div class="plans">
+        <div class="plan a rv">
+          <span class="plan-badge">Básico</span>
+          <h3>Plano Básico</h3>
+          <div class="amount"><div class="from">A partir de</div><div class="value"><span>R$</span>150</div><div class="per">por dashboard</div></div>
+          <span class="tag no">Sem manutenção</span>
+          <ul><li>Até 1 tabela de dados</li><li>Até 10 KPIs</li><li>Visualização simples</li><li>Entrega rápida</li></ul>
+          <a href="#solicitacoes" class="btn btn-ghost btn-sm btn-block" onclick="preSelect('Dashboard / Power BI','Básico')">Solicitar</a>
+        </div>
+        <div class="plan b rv">
+          <span class="plan-badge">Intermediário</span>
+          <h3>Plano Intermediário</h3>
+          <div class="amount"><div class="from">A partir de</div><div class="value"><span>R$</span>300</div><div class="per">por dashboard</div></div>
+          <span class="tag no">Sem manutenção</span>
+          <ul><li>Até 3 tabelas de dados</li><li>Até 20 KPIs</li><li>Modelagem de dados</li><li>Filtros interativos</li></ul>
+          <a href="#solicitacoes" class="btn btn-ghost btn-sm btn-block" onclick="preSelect('Dashboard / Power BI','Intermediário')">Solicitar</a>
+        </div>
+        <div class="plan c rv">
+          <span class="plan-badge">Avançado</span>
+          <h3>Plano Avançado</h3>
+          <div class="amount"><div class="from">A partir de</div><div class="value"><span>R$</span>600</div><div class="per">por dashboard</div></div>
+          <span class="tag yes">Manutenção 20 dias</span>
+          <ul><li>Até 6 tabelas de dados</li><li>Até 20 KPIs</li><li>Indicadores complexos</li><li>Tratamento de dados</li><li>Manutenção por 20 dias</li></ul>
+          <a href="#solicitacoes" class="btn btn-ghost btn-sm btn-block" onclick="preSelect('Dashboard / Power BI','Avançado')">Solicitar</a>
+        </div>
+        <div class="plan d rv">
+          <span class="plan-badge">Dourado</span>
+          <h3>Plano Dourado</h3>
+          <div class="amount"><div class="from">A partir de</div><div class="value"><span>R$</span>1.500</div><div class="per">por projeto</div></div>
+          <span class="tag yes">Manutenção 20 dias</span>
+          <ul><li>Até 10+ tabelas de dados</li><li>Indicadores complexos</li><li>Tratamento de dados</li><li>ETL e automações</li><li>Suporte prioritário</li></ul>
+          <a href="#solicitacoes" class="btn btn-blue btn-sm btn-block" onclick="preSelect('Dashboard / Power BI','Dourado')">Solicitar agora</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="plan-auto" style="display:none">
+      <p class="tab-note">O valor de uma automação depende do processo: quantas etapas, quantas fontes e com que frequência ela roda. Envie sua solicitação e devolvemos um orçamento fechado.</p>
+      <div class="plans p3">
+        <div class="plan a rv">
+          <span class="plan-badge">Tarefa pontual</span>
+          <h3>Automação simples</h3>
+          <p class="pdesc">Uma tarefa repetitiva, um arquivo, um resultado.</p>
+          <div class="amount"><div class="from">Investimento</div><div class="value sob">Sob orçamento</div><div class="per">avaliação gratuita</div></div>
+          <ul><li>Automação de uma planilha ou rotina</li><li>Macro ou botão no Excel (VBA)</li><li>Geração automática de um arquivo</li><li>Treinamento de uso</li></ul>
+          <a href="#solicitacoes" class="btn btn-ghost btn-sm btn-block" onclick="preSelect('Automação de processos','Automação simples')">Solicitar orçamento</a>
+        </div>
+        <div class="plan c rv">
+          <span class="plan-badge">Rotina completa</span>
+          <h3>Automação de processo</h3>
+          <p class="pdesc">Do arquivo bruto ao relatório enviado, sem intervenção manual.</p>
+          <div class="amount"><div class="from">Investimento</div><div class="value sob">Sob orçamento</div><div class="per">avaliação gratuita</div></div>
+          <ul><li>Consolidação de vários arquivos</li><li>Tratamento e padronização dos dados</li><li>Relatório gerado automaticamente</li><li>Envio automático por e-mail</li><li>Acompanhamento pós-entrega</li></ul>
+          <a href="#solicitacoes" class="btn btn-blue btn-sm btn-block" onclick="preSelect('Automação de processos','Automação de processo completo')">Solicitar orçamento</a>
+        </div>
+        <div class="plan b rv">
+          <span class="plan-badge">Contínuo</span>
+          <h3>Automação + indicadores</h3>
+          <p class="pdesc">A automação alimenta o painel, e o painel se atualiza sozinho.</p>
+          <div class="amount"><div class="from">Investimento</div><div class="value sob">Sob orçamento</div><div class="per">avaliação gratuita</div></div>
+          <ul><li>Automação do processo de dados</li><li>Dashboard conectado à automação</li><li>Indicadores sem trabalho manual</li><li>Integração entre sistemas</li><li>Suporte prioritário</li></ul>
+          <a href="#solicitacoes" class="btn btn-ghost btn-sm btn-block" onclick="preSelect('Automação de processos','Automação + indicadores')">Solicitar orçamento</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="plan-custom" style="display:none">
+      <p class="tab-note">Nem todo projeto cabe em um pacote pronto. Conte o problema e montamos o escopo com você.</p>
+      <div class="big-card rv">
+        <h3>Dados + BI + Automação, do seu jeito</h3>
+        <p>Combinamos os três serviços de acordo com o que a sua empresa precisa. Você explica o processo, a Lumanoids analisa o que dá para melhorar e apresenta uma proposta com escopo, prazo e valor definidos antes de começar.</p>
+        <div class="quote-box">“Não sei bem o que preciso, só sei que perco muito tempo com isso todo mês.”</div>
+        <a href="#solicitacoes" class="btn btn-blue" onclick="preSelect('Não sei ainda / preciso de ajuda')">Quero explicar meu processo</a>
+      </div>
+    </div>
+
+    <div class="disclaimer rv"><strong>Todos os valores são apresentados como “a partir de”.</strong><br>O investimento varia conforme a complexidade do projeto • Escopo definido antes do início • Ajustes pós-entrega sob avaliação</div>
+  </div>
+</section>
+
+<!-- PROCESSO -->
+<section class="band">
+  <div class="wrap">
+    <div class="sec-head-center rv">
+      <p class="eyebrow">Como trabalhamos</p>
+      <h2 class="title">Do problema ao resultado</h2>
+      <p class="lead" style="margin-top:12px">Você não precisa chegar com a solução pronta. Basta trazer o problema.</p>
+    </div>
+    <div class="steps">
+      <div class="step rv"><div class="n">1</div><h3>Entendemos o problema</h3><p>Conversamos sobre a sua rotina, o que trava hoje e o que você precisa acompanhar.</p></div>
+      <div class="step rv"><div class="n">2</div><h3>Organizamos os dados</h3><p>Localizamos, limpamos e estruturamos as informações que vão sustentar a solução.</p></div>
+      <div class="step rv"><div class="n">3</div><h3>Automatizamos o processo</h3><p>O que era manual e repetitivo passa a acontecer sozinho, no tempo certo.</p></div>
+      <div class="step rv"><div class="n">4</div><h3>Criamos a solução</h3><p>Dashboard, automação ou os dois, montados sob medida para o seu caso.</p></div>
+      <div class="step rv"><div class="n">5</div><h3>Entregamos o resultado</h3><p>Com treinamento e suporte para você usar com total autonomia.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFÓLIO -->
+<section id="portfolio" class="band band-bg">
+  <div class="wrap">
+    <div class="sec-head-center rv">
+      <p class="eyebrow">Portfólio</p>
+      <h2 class="title">Exemplos de dashboards e automações</h2>
+      <p class="lead" style="margin-top:12px">Modelos criados pela Lumanoids para diferentes áreas do negócio. Clique para navegar entre eles.</p>
+    </div>
+    <div class="rv">
+      <p class="pf-cat">Dashboards</p>
+      <div class="pf-tabs">
+        <button class="pf-tab active" onclick="showDash('financeiro',this)">Financeiro</button>
+        <button class="pf-tab" onclick="showDash('vendas',this)">Vendas</button>
+        <button class="pf-tab" onclick="showDash('ecommerce',this)">E-commerce</button>
+        <button class="pf-tab" onclick="showDash('equipe',this)">Gestão de equipe</button>
+      </div>
+      <p class="pf-cat">Automações</p>
+      <div class="pf-tabs">
+        <button class="pf-tab" onclick="showDash('autorel',this)">Relatórios automáticos</button>
+        <button class="pf-tab" onclick="showDash('autoemail',this)">E-mails automáticos</button>
+        <button class="pf-tab" onclick="showDash('autoexcel',this)">Excel e consolidação</button>
+      </div>
+    </div>
+
+    <div class="pf-view rv" id="dash-financeiro">
+      <div class="pf-head"><h3>Dashboard Financeiro — Jan/2025</h3><span class="pill">Atualizado hoje</span></div>
+      <div class="kpis k4">
+        <div class="kpi"><div class="lbl">Receita total</div><div class="val">R$ 284k</div><div class="chg">↑ 12% vs mês anterior</div></div>
+        <div class="kpi"><div class="lbl">Despesas</div><div class="val">R$ 189k</div><div class="chg dn">↑ 5% vs mês anterior</div></div>
+        <div class="kpi"><div class="lbl">Lucro líquido</div><div class="val" style="color:var(--blue)">R$ 95k</div><div class="chg">↑ 18% vs mês anterior</div></div>
+        <div class="kpi"><div class="lbl">Margem líquida</div><div class="val">33,4%</div><div class="chg">↑ 2,1pp</div></div>
+      </div>
+      <div class="charts c2">
+        <div class="cbox">
+          <div class="cbox-t">Receita x Despesa (6 meses)</div>
+          <div class="barchart">
+            <div class="b" style="height:55%;background:#1D4ED8"></div><div class="b" style="height:38%;background:#CBD5E1"></div>
+            <div class="b" style="height:62%;background:#1D4ED8"></div><div class="b" style="height:41%;background:#CBD5E1"></div>
+            <div class="b" style="height:71%;background:#1D4ED8"></div><div class="b" style="height:44%;background:#CBD5E1"></div>
+            <div class="b" style="height:68%;background:#1D4ED8"></div><div class="b" style="height:42%;background:#CBD5E1"></div>
+            <div class="b" style="height:80%;background:#1D4ED8"></div><div class="b" style="height:47%;background:#CBD5E1"></div>
+            <div class="b" style="height:92%;background:#1D4ED8"></div><div class="b" style="height:50%;background:#CBD5E1"></div>
+          </div>
+          <div class="chart-legend"><span><i style="background:#1D4ED8"></i>Receita</span><span><i style="background:#CBD5E1"></i>Despesa</span></div>
+        </div>
+        <div class="cbox">
+          <div class="cbox-t">Distribuição de gastos</div>
+          <div class="donut-row">
+            <svg width="92" height="92" viewBox="0 0 42 42">
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#1D4ED8" stroke-width="7" stroke-dasharray="40 60" stroke-dashoffset="25"/>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#60A5FA" stroke-width="7" stroke-dasharray="24 76" stroke-dashoffset="-15"/>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#93C5FD" stroke-width="7" stroke-dasharray="16 84" stroke-dashoffset="-39"/>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="#CBD5E1" stroke-width="7" stroke-dasharray="20 80" stroke-dashoffset="-55"/>
+            </svg>
+            <div class="donut-leg">
+              <span><i style="background:#1D4ED8"></i>Pessoal 40%</span>
+              <span><i style="background:#60A5FA"></i>Operacional 24%</span>
+              <span><i style="background:#93C5FD"></i>Marketing 16%</span>
+              <span><i style="background:#CBD5E1"></i>Outros 20%</span>
             </div>
           </div>
-          <div class="chart-box">
-            <div class="chart-box-title">Funil de Vendas</div>
-            <div style="display:flex;flex-direction:column;gap:6px;padding-top:2px">
-              <div><div style="font-size:0.66rem;color:var(--gray);margin-bottom:3px">Leads (320)</div><div style="height:17px;background:linear-gradient(90deg,#7B3FE4,#7B3FE444);border-radius:4px;width:100%"></div></div>
-              <div><div style="font-size:0.66rem;color:var(--gray);margin-bottom:3px">Qualificados (180)</div><div style="height:17px;background:linear-gradient(90deg,#00C8E8,#00C8E844);border-radius:4px;width:56%"></div></div>
-              <div><div style="font-size:0.66rem;color:var(--gray);margin-bottom:3px">Propostas (90)</div><div style="height:17px;background:linear-gradient(90deg,#f59e0b,#f59e0b44);border-radius:4px;width:28%"></div></div>
-              <div><div style="font-size:0.66rem;color:var(--gray);margin-bottom:3px">Fechamentos (64)</div><div style="height:17px;background:linear-gradient(90deg,#22c55e,#22c55e44);border-radius:4px;width:20%"></div></div>
-            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pf-view rv" id="dash-vendas" style="display:none">
+      <div class="pf-head"><h3>Dashboard Comercial — Março/2025</h3><span class="pill">Semanal</span></div>
+      <div class="kpis k4">
+        <div class="kpi"><div class="lbl">Vendas do mês</div><div class="val">R$ 347k</div><div class="chg">↑ 19% vs meta</div></div>
+        <div class="kpi"><div class="lbl">Meta</div><div class="val">R$ 291k</div><div class="chg">Superada</div></div>
+        <div class="kpi"><div class="lbl">Novos clientes</div><div class="val" style="color:var(--blue)">64</div><div class="chg">↑ 12 vs mês anterior</div></div>
+        <div class="kpi"><div class="lbl">Taxa de fechamento</div><div class="val">28%</div><div class="chg">↑ 3pp</div></div>
+      </div>
+      <div class="charts c2">
+        <div class="cbox">
+          <div class="cbox-t">Vendas por vendedor</div>
+          <div class="hbars">
+            <div class="hbar"><span class="lb">Mariana K.</span><span class="tr"><span class="fl" style="width:95%;display:block"></span></span><span class="vl">R$ 89k</span></div>
+            <div class="hbar"><span class="lb">Pedro N.</span><span class="tr"><span class="fl" style="width:78%;display:block;background:#3B82F6"></span></span><span class="vl">R$ 72k</span></div>
+            <div class="hbar"><span class="lb">Camila R.</span><span class="tr"><span class="fl" style="width:68%;display:block;background:#60A5FA"></span></span><span class="vl">R$ 63k</span></div>
+            <div class="hbar"><span class="lb">Diego M.</span><span class="tr"><span class="fl" style="width:58%;display:block;background:#93C5FD"></span></span><span class="vl">R$ 54k</span></div>
+            <div class="hbar"><span class="lb">Luana P.</span><span class="tr"><span class="fl" style="width:47%;display:block;background:#BFDBFE"></span></span><span class="vl">R$ 43k</span></div>
           </div>
         </div>
-      </div></div>
+        <div class="cbox">
+          <div class="cbox-t">Funil de vendas</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div><div style="font-size:.75rem;color:var(--muted);margin-bottom:4px">Leads (320)</div><div style="height:20px;background:#1D4ED8;border-radius:5px;width:100%"></div></div>
+            <div><div style="font-size:.75rem;color:var(--muted);margin-bottom:4px">Qualificados (180)</div><div style="height:20px;background:#3B82F6;border-radius:5px;width:56%"></div></div>
+            <div><div style="font-size:.75rem;color:var(--muted);margin-bottom:4px">Propostas (90)</div><div style="height:20px;background:#60A5FA;border-radius:5px;width:28%"></div></div>
+            <div><div style="font-size:.75rem;color:var(--muted);margin-bottom:4px">Fechamentos (64)</div><div style="height:20px;background:#16A34A;border-radius:5px;width:20%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pf-view rv" id="dash-ecommerce" style="display:none">
+      <div class="pf-head"><h3>Dashboard E-commerce — Março/2025</h3><span class="pill">Ao vivo</span></div>
+      <div class="kpis k4">
+        <div class="kpi"><div class="lbl">Pedidos</div><div class="val" style="color:var(--blue)">1.847</div><div class="chg">↑ 23% esta semana</div></div>
+        <div class="kpi"><div class="lbl">GMV</div><div class="val">R$ 412k</div><div class="chg">↑ 31% vs período</div></div>
+        <div class="kpi"><div class="lbl">Ticket médio</div><div class="val">R$ 223</div><div class="chg">↑ R$ 18</div></div>
+        <div class="kpi"><div class="lbl">Conversão</div><div class="val">3,2%</div><div class="chg">↑ 0,4pp</div></div>
+      </div>
+      <div class="charts ceq">
+        <div class="cbox">
+          <div class="cbox-t">Top categorias</div>
+          <div class="hbars">
+            <div class="hbar"><span class="lb">Eletrônicos</span><span class="tr"><span class="fl" style="width:85%;display:block"></span></span><span class="vl">R$ 185k</span></div>
+            <div class="hbar"><span class="lb">Moda</span><span class="tr"><span class="fl" style="width:62%;display:block;background:#3B82F6"></span></span><span class="vl">R$ 98k</span></div>
+            <div class="hbar"><span class="lb">Casa</span><span class="tr"><span class="fl" style="width:44%;display:block;background:#60A5FA"></span></span><span class="vl">R$ 72k</span></div>
+            <div class="hbar"><span class="lb">Esporte</span><span class="tr"><span class="fl" style="width:28%;display:block;background:#93C5FD"></span></span><span class="vl">R$ 37k</span></div>
+          </div>
+        </div>
+        <div class="cbox">
+          <div class="cbox-t">Status de pedidos</div>
+          <table class="mini">
+            <tr><th>Status</th><th>Qtd</th><th>%</th></tr>
+            <tr><td><span class="chip ok">Entregue</span></td><td>1.204</td><td>65%</td></tr>
+            <tr><td><span class="chip wait">Em trânsito</span></td><td>481</td><td>26%</td></tr>
+            <tr><td><span class="chip info">Aguardando</span></td><td>110</td><td>6%</td></tr>
+            <tr><td><span class="chip bad">Devolvido</span></td><td>52</td><td>3%</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="pf-view rv" id="dash-equipe" style="display:none">
+      <div class="pf-head"><h3>Dashboard Gestão de Equipe — Q1 2025</h3><span class="pill">Mensal</span></div>
+      <div class="kpis k4">
+        <div class="kpi"><div class="lbl">Colaboradores</div><div class="val">48</div><div class="chg">↑ 3 contratações</div></div>
+        <div class="kpi"><div class="lbl">Produtividade</div><div class="val" style="color:var(--blue)">87%</div><div class="chg">↑ 5% vs trimestre</div></div>
+        <div class="kpi"><div class="lbl">Absenteísmo</div><div class="val">3,1%</div><div class="chg">↓ 0,8pp (melhora)</div></div>
+        <div class="kpi"><div class="lbl">eNPS</div><div class="val">72</div><div class="chg">↑ 8 pontos</div></div>
+      </div>
+      <div class="charts ceq">
+        <div class="cbox">
+          <div class="cbox-t">Produtividade por equipe</div>
+          <div class="hbars">
+            <div class="hbar"><span class="lb">Vendas</span><span class="tr"><span class="fl" style="width:92%;display:block"></span></span><span class="vl">92%</span></div>
+            <div class="hbar"><span class="lb">Suporte</span><span class="tr"><span class="fl" style="width:88%;display:block;background:#3B82F6"></span></span><span class="vl">88%</span></div>
+            <div class="hbar"><span class="lb">Marketing</span><span class="tr"><span class="fl" style="width:81%;display:block;background:#60A5FA"></span></span><span class="vl">81%</span></div>
+            <div class="hbar"><span class="lb">TI</span><span class="tr"><span class="fl" style="width:79%;display:block;background:#93C5FD"></span></span><span class="vl">79%</span></div>
+            <div class="hbar"><span class="lb">Financeiro</span><span class="tr"><span class="fl" style="width:85%;display:block;background:#3B82F6"></span></span><span class="vl">85%</span></div>
+          </div>
+        </div>
+        <div class="cbox">
+          <div class="cbox-t">Treinamentos concluídos</div>
+          <table class="mini">
+            <tr><th>Colaborador</th><th>Módulos</th><th>Status</th></tr>
+            <tr><td>Ana Lima</td><td>8/8</td><td><span class="chip ok">100%</span></td></tr>
+            <tr><td>Carlos M.</td><td>6/8</td><td><span class="chip wait">75%</span></td></tr>
+            <tr><td>Beatriz S.</td><td>8/8</td><td><span class="chip ok">100%</span></td></tr>
+            <tr><td>Rafael T.</td><td>4/8</td><td><span class="chip bad">50%</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="pf-view rv" id="dash-autorel" style="display:none">
+      <div class="pf-head"><h3>Relatório semanal gerado automaticamente</h3><span class="pill">Toda segunda, 07h00</span></div>
+      <div class="kpis k3">
+        <div class="kpi"><div class="lbl">Antes</div><div class="val" style="color:var(--red)">3h</div><div class="chg dn">por semana, na mão</div></div>
+        <div class="kpi"><div class="lbl">Depois</div><div class="val" style="color:var(--green)">4 min</div><div class="chg">sem ninguém operar</div></div>
+        <div class="kpi"><div class="lbl">Erros de digitação</div><div class="val" style="color:var(--blue)">0</div><div class="chg">processo padronizado</div></div>
+      </div>
+      <div class="cbox" style="margin-bottom:12px">
+        <div class="cbox-t">Como o processo roda</div>
+        <div class="pipe">
+          <div class="node"><div class="ni"><svg viewBox="0 0 24 24"><use href="#i-download"/></svg></div><div class="nt">Coleta</div><div class="ns">arquivos do mês</div></div>
+          <div class="arw">→</div>
+          <div class="node"><div class="ni"><svg viewBox="0 0 24 24"><use href="#i-broom"/></svg></div><div class="nt">Trata</div><div class="ns">limpa e padroniza</div></div>
+          <div class="arw">→</div>
+          <div class="node"><div class="ni"><svg viewBox="0 0 24 24"><use href="#i-file"/></svg></div><div class="nt">Monta</div><div class="ns">relatório pronto</div></div>
+          <div class="arw">→</div>
+          <div class="node"><div class="ni"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></div><div class="nt">Envia</div><div class="ns">para a equipe</div></div>
+        </div>
+      </div>
+      <div class="cbox">
+        <div class="cbox-t">Última execução</div>
+        <div class="logs">
+          <div class="log"><span class="ok">✓</span> 42 arquivos lidos e consolidados <span class="tm">07:00</span></div>
+          <div class="log"><span class="ok">✓</span> Dados tratados e validados <span class="tm">07:01</span></div>
+          <div class="log"><span class="ok">✓</span> Relatório gerado em Excel e PDF <span class="tm">07:03</span></div>
+          <div class="log"><span class="ok">✓</span> Enviado para 8 destinatários <span class="tm">07:04</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pf-view rv" id="dash-autoemail" style="display:none">
+      <div class="pf-head"><h3>Envio automático de e-mails e comunicados</h3><span class="pill">Diário</span></div>
+      <div class="kpis k3">
+        <div class="kpi"><div class="lbl">E-mails no mês</div><div class="val" style="color:var(--blue)">320</div><div class="chg">enviados sozinhos</div></div>
+        <div class="kpi"><div class="lbl">Esquecimentos</div><div class="val" style="color:var(--green)">0</div><div class="chg">nada depende de lembrar</div></div>
+        <div class="kpi"><div class="lbl">Tempo da equipe</div><div class="val">-90%</div><div class="chg">dedicado a outras tarefas</div></div>
+      </div>
+      <div class="charts ceq">
+        <div class="cbox">
+          <div class="cbox-t">Quem recebe o quê</div>
+          <table class="mini">
+            <tr><th>Envio</th><th>Destino</th><th>Quando</th></tr>
+            <tr><td>Resumo de vendas</td><td>Diretoria</td><td>Diário 08h</td></tr>
+            <tr><td>Pendências em aberto</td><td>Operação</td><td>Diário 09h</td></tr>
+            <tr><td>Fechamento do mês</td><td>Financeiro</td><td>Dia 1º</td></tr>
+            <tr><td>Comunicado de atualização</td><td>Todos</td><td>A cada versão</td></tr>
+          </table>
+        </div>
+        <div class="cbox">
+          <div class="cbox-t">Fluxo do envio</div>
+          <div class="logs">
+            <div class="log"><span class="ok">1</span> Automação lê a base atualizada</div>
+            <div class="log"><span class="ok">2</span> Monta o conteúdo de cada e-mail</div>
+            <div class="log"><span class="ok">3</span> Anexa o arquivo correspondente</div>
+            <div class="log"><span class="ok">4</span> Envia para a lista certa</div>
+            <div class="log"><span class="ok">5</span> Registra o envio para conferência</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pf-view rv" id="dash-autoexcel" style="display:none">
+      <div class="pf-head"><h3>Consolidação de planilhas e processamento de Excel</h3><span class="pill">Sob demanda ou agendado</span></div>
+      <div class="kpis k3">
+        <div class="kpi"><div class="lbl">Arquivos consolidados</div><div class="val" style="color:var(--blue)">128</div><div class="chg">em uma base única</div></div>
+        <div class="kpi"><div class="lbl">Copiar e colar</div><div class="val" style="color:var(--green)">Zero</div><div class="chg">tudo automático</div></div>
+        <div class="kpi"><div class="lbl">Tempo por rodada</div><div class="val">2 min</div><div class="chg">antes: 4 horas</div></div>
+      </div>
+      <div class="cbox" style="margin-bottom:12px">
+        <div class="cbox-t">De vários arquivos para uma base só</div>
+        <div class="pipe">
+          <div class="node"><div class="ni"><svg viewBox="0 0 24 24"><use href="#i-folder"/></svg></div><div class="nt">Pasta com arquivos</div><div class="ns">formatos diferentes</div></div>
+          <div class="arw">→</div>
+          <div class="node"><div class="ni"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg></div><div class="nt">Automação</div><div class="ns">VBA · Python · Power Query</div></div>
+          <div class="arw">→</div>
+          <div class="node"><div class="ni"><svg viewBox="0 0 24 24"><use href="#i-db"/></svg></div><div class="nt">Base única</div><div class="ns">limpa e padronizada</div></div>
+          <div class="arw">→</div>
+          <div class="node"><div class="ni"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></div><div class="nt">Painel</div><div class="ns">atualizado sozinho</div></div>
+        </div>
+      </div>
+      <div class="cbox">
+        <div class="cbox-t">O que a automação resolve</div>
+        <div class="logs">
+          <div class="log"><span class="ok">✓</span> Nomes de colunas diferentes em cada arquivo</div>
+          <div class="log"><span class="ok">✓</span> Datas e valores em formatos inconsistentes</div>
+          <div class="log"><span class="ok">✓</span> Linhas duplicadas e registros em branco</div>
+          <div class="log"><span class="ok">✓</span> Geração do arquivo final já no formato usado pela equipe</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px" class="rv">
+      <a href="#solicitacoes" class="btn btn-blue">Solicitar projeto</a>
+      <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="btn btn-wpp"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Falar com a Lumanoids</a>
     </div>
   </div>
 </section>
 
 <!-- SOBRE -->
-<section id="sobre">
-  <div class="sobre-inner">
-    <div class="sobre-visual reveal">
-      <div class="sobre-box">
-        <div class="sobre-logo-text">Lumanoids</div>
-        <div class="sobre-tagline">Transformando dados em decisão</div>
-        <div style="margin-top:26px;padding-top:26px;border-top:1px solid var(--border);color:var(--gray);font-size:0.83rem;line-height:1.8;font-style:italic">"Não é sobre ter dados.<br>É sobre entender e agir."</div>
+<section id="sobre" class="band">
+  <div class="wrap">
+    <div class="about">
+      <div class="about-box rv">
+        <div class="ab-logo">Lumanoids</div>
+        <div class="ab-tag">Dados • Automação • Inteligência</div>
+        <div class="ab-quote">“Transformamos dados em informação, processos manuais em automações e informações em decisões.”</div>
       </div>
-    </div>
-    <div class="sobre-text reveal">
-      <p class="section-label">Nossa história</p>
-      <h2 class="section-title">Dados para todos,<br>não só para analistas</h2>
-      <p>A <strong>Lumanoids</strong> nasceu da observação de um problema real: empresas com dados abundantes, mas sem clareza para agir sobre eles.</p>
-      <p>Nossa missão é <strong>democratizar o uso de dados</strong>, tornando as informações acessíveis para gestores e donos de negócio, sem necessidade de saber programar ou analisar planilhas complexas.</p>
-      <p>Não entregamos gráficos bonitos. Entregamos <strong>decisões mais rápidas, mais seguras e mais inteligentes</strong> para o seu negócio.</p>
-      <a href="https://wa.me/5511998899271" target="_blank" class="btn-primary" style="display:inline-flex;margin-top:14px">Conversar com a equipe</a>
+      <div class="about-text rv">
+        <p class="eyebrow">Nossa história</p>
+        <h2 class="title" style="margin-bottom:16px">Tecnologia para quem não precisa entender de tecnologia</h2>
+        <p>A <strong>Lumanoids</strong> nasceu da observação de um problema real: empresas com dados abundantes e rotinas cheias de tarefas manuais, mas sem tempo e sem clareza para agir.</p>
+        <p>Nossa missão é <strong>tirar o trabalho repetitivo do caminho</strong> e deixar as informações acessíveis para gestores e donos de negócio, sem precisar saber programar ou montar planilhas complexas.</p>
+        <p>Você não precisa saber o que é VBA, Power Query ou ETL. Você só precisa saber que existe um problema na empresa, e a Lumanoids ajuda a resolver.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+          <a href="#solicitacoes" class="btn btn-blue">Solicitar projeto</a>
+          <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="btn btn-wpp"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Conversar</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- FORMULÁRIO -->
-<section id="orcamento">
-  <div class="max-w">
-    <div class="center reveal">
-      <p class="section-label">Orçamento</p>
-      <h2 class="section-title">Vamos começar?</h2>
-      <p class="section-sub">Preencha o briefing. Respondemos em até 24 horas com uma proposta personalizada.</p>
+<!-- SOLICITAÇÕES -->
+<section id="solicitacoes" class="band band-bg">
+  <span id="orcamento"></span>
+  <div class="wrap">
+    <div class="sec-head-center rv">
+      <p class="eyebrow">Solicitações</p>
+      <h2 class="title">Envie sua solicitação</h2>
+      <p class="lead" style="margin-top:12px">Dashboard, automação ou solução personalizada: descreva o que você precisa e a Lumanoids responde em até 24 horas.</p>
     </div>
-    <div class="form-steps-guide reveal">
-      <h4>📋 Como funciona o formulário</h4>
-      <div class="guide-steps">
-        <div class="guide-step"><div class="guide-step-num">1</div><span>Preencha todos os campos abaixo com as informações do seu projeto.</span></div>
-        <div class="guide-step"><div class="guide-step-num">2</div><span>Clique em <strong style="color:var(--white)">"Enviar briefing"</strong>. O formulário envia automaticamente para <strong style="color:var(--cyan)">luma.sampaio.dados@gmail.com</strong> via Formspree.</span></div>
-        <div class="guide-step"><div class="guide-step-num">3</div><span>Você verá uma mensagem de confirmação na tela. Se preencheu seu e-mail, receberá uma cópia também.</span></div>
-        <div class="guide-step"><div class="guide-step-num">4</div><span>Entraremos em contato em até <strong style="color:var(--white)">24 horas</strong>. Ou fale agora direto pelo WhatsApp!</span></div>
+
+    <div class="ways rv">
+      <div class="way">
+        <h4><svg viewBox="0 0 24 24"><use href="#i-file"/></svg> Pelo formulário</h4>
+        <p>Para registrar a demanda de forma organizada, com todos os detalhes do projeto. É o caminho mais rápido para receber uma proposta.</p>
+        <a href="#formSolic" class="btn btn-blue btn-sm btn-block">Solicitar projeto</a>
+      </div>
+      <div class="way wpp">
+        <h4><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Prefere falar diretamente?</h4>
+        <p>Se você tem dúvidas antes de enviar a solicitação, ou prefere explicar conversando, é só chamar no WhatsApp.</p>
+        <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="btn btn-wpp btn-sm btn-block"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Falar com a Lumanoids</a>
       </div>
     </div>
-    <div class="form-wrapper reveal">
-      <div class="fs-success-box" id="successBox">
-        <div style="font-size:2.3rem;margin-bottom:12px">✅</div>
-        <h3 style="font-weight:800;font-size:1.15rem;margin-bottom:7px">Briefing enviado com sucesso!</h3>
-        <p style="color:var(--gray);font-size:0.88rem;margin-bottom:18px">Entraremos em contato em até 24h. Você também pode nos chamar agora.</p>
-        <a href="https://wa.me/5511998899271" target="_blank" class="btn-primary" style="display:inline-flex">Falar agora no WhatsApp</a>
+
+    <div class="guide rv">
+      <h4>Como funciona o formulário</h4>
+      <div class="g"><span class="gn">1</span><span>Preencha os campos abaixo com as informações do seu projeto ou do processo que você quer automatizar.</span></div>
+      <div class="g"><span class="gn">2</span><span>Clique em <strong>“Enviar solicitação”</strong>. O formulário envia automaticamente para <strong style="color:var(--blue)">luma.sampaio.dados@gmail.com</strong>.</span></div>
+      <div class="g"><span class="gn">3</span><span>Você verá uma mensagem de confirmação na tela. Se preencheu seu e-mail, receberá uma cópia também.</span></div>
+      <div class="g"><span class="gn">4</span><span>Respondemos em até <strong>24 horas</strong>. Se preferir, pode chamar no WhatsApp enquanto isso.</span></div>
+    </div>
+
+    <div class="form-card rv" id="formSolic">
+      <div class="success" id="successBox">
+        <div class="si"><svg viewBox="0 0 24 24" width="26" height="26"><use href="#i-check"/></svg></div>
+        <h3>Solicitação enviada com sucesso!</h3>
+        <p>Respondemos em até 24h. Você também pode nos chamar agora.</p>
+        <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="btn btn-wpp"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Falar agora no WhatsApp</a>
       </div>
       <form id="briefingForm" action="https://formspree.io/f/xdapdoyw" method="POST">
-        <div class="form-grid">
-          <div class="form-group"><label for="nome">Nome completo *</label><input type="text" id="nome" name="nome" placeholder="Seu nome" required></div>
-          <div class="form-group"><label for="empresa">Empresa *</label><input type="text" id="empresa" name="empresa" placeholder="Nome da empresa" required></div>
-          <div class="form-group"><label for="email">E-mail</label><input type="email" id="email" name="email" placeholder="seu@email.com"></div>
-          <div class="form-group"><label for="whatsapp">WhatsApp *</label><input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 99999-9999" required></div>
-          <div class="form-group">
+        <div class="fgrid">
+          <div class="fg"><label for="nome">Nome completo *</label><input type="text" id="nome" name="nome" placeholder="Seu nome" required></div>
+          <div class="fg"><label for="empresa">Empresa *</label><input type="text" id="empresa" name="empresa" placeholder="Nome da empresa" required></div>
+          <div class="fg"><label for="email">E-mail</label><input type="email" id="email" name="email" placeholder="seu@email.com"></div>
+          <div class="fg"><label for="whatsapp">WhatsApp *</label><input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 99999-9999" required></div>
+          <div class="fg full">
+            <label for="tipo_solucao">O que você precisa? *</label>
+            <select id="tipo_solucao" name="tipo_solucao" required>
+              <option value="">Selecione...</option>
+              <option>Dashboard / Power BI</option>
+              <option>Automação de processos</option>
+              <option>Organização e tratamento de dados</option>
+              <option>Integração de dados / sistemas</option>
+              <option>Solução personalizada</option>
+              <option>Não sei ainda / preciso de ajuda</option>
+            </select>
+            <span class="fhint">Se não souber, escolha a última opção e explique o problema mais abaixo.</span>
+          </div>
+          <div class="fg">
+            <label for="area">Área do processo</label>
+            <select id="area" name="area"><option value="">Selecione...</option><option>Financeiro</option><option>Vendas / Comercial</option><option>E-commerce</option><option>Gestão de Equipe / RH</option><option>Operacional</option><option>Administrativo</option><option>Marketing</option><option>Outro</option></select>
+          </div>
+          <div class="fg">
             <label for="plano">Plano de interesse</label>
-            <select id="plano" name="plano"><option value="">Selecione...</option><option>Básico — R$ 150</option><option>Intermediário — R$ 300</option><option>Avançado — R$ 600</option><option>Dourado — R$ 1.500</option><option>Não sei ainda</option></select>
+            <select id="plano" name="plano"><option value="">Selecione...</option><option>Básico — a partir de R$ 150</option><option>Intermediário — a partir de R$ 300</option><option>Avançado — a partir de R$ 600</option><option>Dourado — a partir de R$ 1.500</option><option>Automação simples</option><option>Automação de processo completo</option><option>Automação + indicadores</option><option>Solução personalizada</option><option>Não sei ainda</option></select>
           </div>
-          <div class="form-group">
-            <label for="tipo">Tipo de dashboard</label>
-            <select id="tipo" name="tipo_dashboard"><option value="">Selecione...</option><option>Financeiro</option><option>Vendas / Comercial</option><option>E-commerce</option><option>Gestão de Equipe / RH</option><option>Operacional</option><option>Marketing</option><option>Outro</option></select>
+          <div class="fg full"><label for="objetivo">O que você precisa resolver? *</label><input type="text" id="objetivo" name="objetivo" placeholder="Ex: acompanhar metas de vendas por semana / parar de montar o relatório na mão toda segunda" required></div>
+          <div class="fg full"><label for="fonte_dados">Onde estão seus dados ou arquivos hoje?</label><input type="text" id="fonte_dados" name="fonte_dados" placeholder="Ex: Excel, Google Sheets, ERP, e-mail, sistema interno..."></div>
+          <div class="fg">
+            <label for="frequencia">Com que frequência isso acontece?</label>
+            <select id="frequencia" name="frequencia"><option value="">Selecione...</option><option>Todo dia</option><option>Toda semana</option><option>Todo mês</option><option>De vez em quando</option><option>Não se aplica</option></select>
           </div>
-          <div class="form-group full"><label for="objetivo">Qual o principal objetivo do dashboard? *</label><input type="text" id="objetivo" name="objetivo" placeholder="Ex: acompanhar metas de vendas semanalmente" required></div>
-          <div class="form-group full"><label for="dados">Onde estão seus dados hoje?</label><input type="text" id="dados" name="fonte_dados" placeholder="Ex: Excel, Google Sheets, ERP, banco de dados..."></div>
-          <div class="form-group">
+          <div class="fg">
             <label for="prazo">Prazo desejado</label>
-            <select id="prazo" name="prazo"><option value="">Selecione...</option><option>Urgente (até 1 semana)</option><option>Normal (2 a 3 semanas)</option><option>Flexível (+ de 1 mês)</option></select>
+            <select id="prazo" name="prazo"><option value="">Selecione...</option><option>Urgente (até 1 semana)</option><option>Normal (2 a 3 semanas)</option><option>Flexível (mais de 1 mês)</option></select>
           </div>
-          <div class="form-group">
+          <div class="fg full">
             <label for="orc_ref">Orçamento de referência</label>
-            <select id="orc_ref" name="orcamento_referencia"><option value="">Selecione...</option><option>Até R$ 300</option><option>R$ 300 a R$ 600</option><option>R$ 600 a R$ 1.500</option><option>Acima de R$ 1.500</option></select>
+            <select id="orc_ref" name="orcamento_referencia"><option value="">Selecione...</option><option>Até R$ 300</option><option>R$ 300 a R$ 600</option><option>R$ 600 a R$ 1.500</option><option>Acima de R$ 1.500</option><option>Prefiro receber uma proposta</option></select>
           </div>
-          <div class="form-group full"><label for="obs">Observações adicionais</label><textarea id="obs" name="observacoes" placeholder="Conte mais sobre o seu negócio ou o que você espera do dashboard..."></textarea></div>
+          <div class="fg full"><label for="obs">Conte como é o processo hoje</label><textarea id="obs" name="observacoes" placeholder="Ex: toda segunda eu baixo 5 arquivos do sistema, junto tudo no Excel, monto um relatório e envio por e-mail para a diretoria."></textarea></div>
         </div>
         <input type="text" name="_gotcha" style="display:none">
-        <button type="submit" class="btn-primary form-submit" id="submitBtn">
-          Enviar briefing
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m22 2-7 20-4-9-9-4z"/></svg>
-        </button>
+        <button type="submit" class="btn btn-blue btn-block fsubmit" id="submitBtn">Enviar solicitação <svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
       </form>
     </div>
   </div>
 </section>
 
-<!-- CTA FINAL -->
-<section id="cta-final">
-  <p class="section-label" style="display:flex;justify-content:center">Pronto para começar?</p>
-  <h2>"Seus dados estão esperando.<br><span style="background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Suas decisões também."</span></h2>
-  <p>Fale com a Lumanoids agora e transforme dados em resultado.</p>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a href="https://wa.me/5511998899271" target="_blank" class="btn-primary">Falar no WhatsApp agora</a>
-    <a href="#orcamento" class="btn-secondary">Preencher briefing</a>
-  </div>
-</section>
-
 <!-- CONTATO -->
-<section id="contato">
-  <div class="max-w">
-    <div class="center reveal"><p class="section-label">Contato</p><h2 class="section-title">Fale com a gente</h2></div>
-    <div class="contato-grid">
-      <a href="https://wa.me/5511998899271" target="_blank" class="contato-card reveal">
-        <div class="contato-icon">💬</div><h3>WhatsApp</h3>
-        <p>(11) 9 9889-9271<br>Resposta rápida</p>
+<section id="contato" class="band">
+  <div class="wrap">
+    <div class="sec-head-center rv">
+      <p class="eyebrow">Contato</p>
+      <h2 class="title">Fale com a gente</h2>
+    </div>
+    <div class="contacts">
+      <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="contact rv">
+        <div class="ci" style="background:var(--green-bg);color:var(--green)"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><use href="#i-wpp"/></svg></div>
+        <h3>WhatsApp</h3><p>(11) 9 9889-9271<br>Resposta rápida</p>
       </a>
-      <a href="mailto:luma.sampaio.dados@gmail.com" class="contato-card reveal">
-        <div class="contato-icon">📧</div><h3>E-mail</h3>
-        <p>luma.sampaio.dados@gmail.com</p>
+      <a href="#solicitacoes" class="contact rv">
+        <div class="ci"><svg viewBox="0 0 24 24" width="22" height="22"><use href="#i-file"/></svg></div>
+        <h3>Solicitações</h3><p>Formulário de projetos<br>Resposta em até 24h</p>
       </a>
-      <a href="https://www.instagram.com/luma.noids/" target="_blank" class="contato-card reveal">
-        <div class="contato-icon">📸</div><h3>Instagram</h3>
-        <p>@luma.noids<br>Siga e acompanhe</p>
+      <a href="mailto:luma.sampaio.dados@gmail.com" class="contact rv">
+        <div class="ci"><svg viewBox="0 0 24 24" width="22" height="22"><use href="#i-mail"/></svg></div>
+        <h3>E-mail</h3><p>luma.sampaio.dados@gmail.com</p>
       </a>
+      <a href="https://www.instagram.com/luma.noids/" target="_blank" rel="noopener" class="contact rv">
+        <div class="ci"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg></div>
+        <h3>Instagram</h3><p>@luma.noids<br>Siga e acompanhe</p>
+      </a>
+    </div>
+
+    <div class="final-cta rv" style="margin-top:38px">
+      <h2>Seus dados podem trabalhar por você.<br><span class="b">Seus processos também.</span></h2>
+      <p>Tenho uma necessidade → envio minha solicitação → a Lumanoids recebe e responde.</p>
+      <div class="fbtns">
+        <a href="#solicitacoes" class="btn btn-blue">Solicitar projeto</a>
+        <a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="btn btn-wpp"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg> Falar no WhatsApp</a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">Lumanoids</div>
-  <div class="footer-links">
+<footer class="main-foot">
+  <div class="fl">
+    <a href="#dados">Dados &amp; BI</a>
+    <a href="#automacao">Automação</a>
+    <a href="#catalogo">Serviços</a>
     <a href="#precos">Planos</a>
-    <a href="#portfolio">Dashboards</a>
-    <a href="#sobre">Sobre</a>
-    <a href="#contato">Contato</a>
+    <a href="#portfolio">Portfólio</a>
+    <a href="#solicitacoes">Solicitações</a>
     <a href="#" onclick="openModal('termos');return false">Termos de uso</a>
     <a href="#" onclick="openModal('privacidade');return false">Privacidade</a>
   </div>
-  <p>© 2025 Lumanoids. Transformando dados em decisão.</p>
+  <p>© 2025 Lumanoids. Dados + Automação + Inteligência para negócios.</p>
 </footer>
+</main>
 
-<!-- WPP FLOAT -->
-<a href="https://wa.me/5511998899271" target="_blank" class="wpp-float" title="Falar no WhatsApp">
-  <div class="wpp-pulse"></div>
-  <svg viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.112 1.523 5.844L.057 23.429a.75.75 0 0 0 .933.933l5.585-1.466A11.946 11.946 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.734 9.734 0 0 1-4.92-1.336l-.352-.21-3.645.957.972-3.553-.228-.366A9.75 9.75 0 1 1 12 21.75z"/></svg>
+<!-- WHATSAPP FLUTUANTE -->
+<a href="https://wa.me/5511998899271" target="_blank" rel="noopener" class="wpp-float" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-wpp"/></svg>
 </a>
 
 <!-- MODAIS -->
-<div class="modal-overlay" id="modalTermos">
+<div class="modal" id="modalTermos">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('termos')">✕</button>
+    <button class="modal-close" onclick="closeModal('termos')" aria-label="Fechar">✕</button>
     <h2>Termos de Uso</h2>
-    <h3>1. Uso do Serviço</h3><p>Os serviços da Lumanoids são destinados a empresas e profissionais para criação e análise de dashboards. O contratante compromete-se a fornecer dados verdadeiros e utilizar os entregáveis de forma legal.</p>
-    <h3>2. Propriedade Intelectual</h3><p>Os dashboards desenvolvidos são de propriedade do cliente após pagamento integral. Modelos, metodologias e processos internos permanecem como propriedade da Lumanoids.</p>
-    <h3>3. Limitação de Responsabilidade</h3><p>A Lumanoids não se responsabiliza por decisões tomadas com base nos dashboards entregues. A qualidade da análise depende dos dados fornecidos pelo cliente.</p>
+    <h3>1. Uso do serviço</h3><p>Os serviços da Lumanoids são destinados a empresas e profissionais para análise de dados, criação de dashboards e automação de processos. O contratante compromete-se a fornecer dados verdadeiros e utilizar os entregáveis de forma legal.</p>
+    <h3>2. Propriedade intelectual</h3><p>Os dashboards e automações desenvolvidos são de propriedade do cliente após pagamento integral. Modelos, metodologias e processos internos permanecem como propriedade da Lumanoids.</p>
+    <h3>3. Limitação de responsabilidade</h3><p>A Lumanoids não se responsabiliza por decisões tomadas com base nos entregáveis. A qualidade da análise e das automações depende dos dados e acessos fornecidos pelo cliente.</p>
     <h3>4. Contato</h3><p>Dúvidas: luma.sampaio.dados@gmail.com ou (11) 9 9889-9271.</p>
   </div>
 </div>
-<div class="modal-overlay" id="modalPrivacidade">
+<div class="modal" id="modalPrivacidade">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('privacidade')">✕</button>
+    <button class="modal-close" onclick="closeModal('privacidade')" aria-label="Fechar">✕</button>
     <h2>Política de Privacidade</h2>
-    <h3>Coleta de dados</h3><p>Coletamos apenas dados necessários: nome, empresa, e-mail, WhatsApp e informações dos briefings.</p>
+    <h3>Coleta de dados</h3><p>Coletamos apenas dados necessários: nome, empresa, e-mail, WhatsApp e informações enviadas no formulário de solicitações.</p>
     <h3>Uso dos dados</h3><p>Seus dados são usados exclusivamente para contato comercial e execução dos projetos. Não compartilhamos com terceiros sem consentimento.</p>
     <h3>Seus direitos</h3><p>Você pode solicitar acesso, correção ou exclusão dos seus dados pelo e-mail luma.sampaio.dados@gmail.com. Em conformidade com a LGPD – Lei nº 13.709/2018.</p>
   </div>
 </div>
 
 <script>
-  window.addEventListener('scroll', () => {
-    document.getElementById('navbar').style.background =
-      window.scrollY > 50 ? 'rgba(10,15,44,0.97)' : 'rgba(10,15,44,0.85)';
-  });
+  /* menu mobile */
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sbOverlay');
   document.getElementById('hamburger').addEventListener('click', () => {
-    document.getElementById('mobileMenu').classList.toggle('open');
+    sidebar.classList.toggle('open'); overlay.classList.toggle('open');
   });
-  function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
-  function showDash(id, btn) {
-    ['financeiro','ecommerce','equipe','vendas'].forEach(d => {
-      document.getElementById('dash-'+d).style.display = 'none';
+  overlay.addEventListener('click', closeMenu);
+  function closeMenu(){ sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+  document.querySelectorAll('.sb-link, .sb-logo, .sb-wpp').forEach(a => a.addEventListener('click', closeMenu));
+
+  /* item ativo na sidebar conforme a rolagem */
+  const links = [...document.querySelectorAll('.sb-link')];
+  const secs = links.map(l => document.getElementById(l.dataset.sec)).filter(Boolean);
+  const spy = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.dataset.sec === e.target.id));
+      }
     });
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('dash-'+id).style.display = 'block';
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  secs.forEach(s => spy.observe(s));
+
+  /* portfólio */
+  const DASHES = ['financeiro','vendas','ecommerce','equipe','autorel','autoemail','autoexcel'];
+  function showDash(id, btn) {
+    DASHES.forEach(d => { const el = document.getElementById('dash-'+d); if (el) el.style.display = 'none'; });
+    document.querySelectorAll('.pf-tab').forEach(b => b.classList.remove('active'));
+    const target = document.getElementById('dash-'+id);
+    target.style.display = 'block'; target.classList.add('on');
     btn.classList.add('active');
   }
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* planos */
+  function showPlan(id, btn) {
+    ['dash','auto','custom'].forEach(p => { const el = document.getElementById('plan-'+p); if (el) el.style.display = 'none'; });
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    const panel = document.getElementById('plan-'+id);
+    panel.style.display = 'block';
+    panel.querySelectorAll('.rv').forEach(el => el.classList.add('on'));
+    btn.classList.add('active');
+  }
+
+  /* pré-seleção do formulário */
+  function setSelect(el, texto) {
+    if (!el || !texto) return;
+    for (let i = 0; i < el.options.length; i++) {
+      if (el.options[i].text === texto || el.options[i].text.indexOf(texto) === 0) { el.selectedIndex = i; return; }
+    }
+  }
+  function preSelect(tipo, plano) {
+    setSelect(document.getElementById('tipo_solucao'), tipo);
+    setSelect(document.getElementById('plano'), plano);
+  }
+
+  /* reveal */
+  const rv = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); rv.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.rv').forEach(el => rv.observe(el));
+
+  /* formulário (Formspree) */
   document.getElementById('briefingForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.innerHTML = 'Enviando... ⏳';
+    btn.textContent = 'Enviando...';
     const data = new FormData(this);
     try {
       const res = await fetch('https://formspree.io/f/xdapdoyw', {
@@ -748,25 +1401,20 @@
         this.style.display = 'none';
         document.getElementById('successBox').style.display = 'block';
       } else {
-        btn.disabled = false;
-        btn.innerHTML = 'Enviar briefing ✈';
-        alert('Erro ao enviar. Tente novamente ou fale pelo WhatsApp.');
+        btn.disabled = false; btn.textContent = 'Enviar solicitação';
+        alert('Não foi possível enviar agora. Tente novamente ou fale pelo WhatsApp.');
       }
-    } catch(err) {
-      btn.disabled = false;
-      btn.innerHTML = 'Enviar briefing';
-      alert('Erro de conexão. Tente novamente.');
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Enviar solicitação';
+      alert('Erro de conexão. Tente novamente ou fale pelo WhatsApp.');
     }
   });
-  function openModal(type) {
-    document.getElementById(type==='termos'?'modalTermos':'modalPrivacidade').classList.add('open');
-  }
-  function closeModal(type) {
-    document.getElementById(type==='termos'?'modalTermos':'modalPrivacidade').classList.remove('open');
-  }
-  document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', function(e) { if(e.target===this) this.classList.remove('open'); });
-  });
+
+  /* modais */
+  function openModal(t){ document.getElementById(t==='termos'?'modalTermos':'modalPrivacidade').classList.add('open'); }
+  function closeModal(t){ document.getElementById(t==='termos'?'modalTermos':'modalPrivacidade').classList.remove('open'); }
+  document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); }));
+  document.addEventListener('keydown', e => { if(e.key==='Escape'){ document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open')); closeMenu(); } });
 </script>
 </body>
 </html>
